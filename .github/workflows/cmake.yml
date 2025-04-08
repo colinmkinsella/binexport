@@ -45,7 +45,7 @@ jobs:
           "-DBINEXPORT_ENABLE_IDAPRO=OFF" \
           "-DBINEXPORT_ENABLE_BINARYNINJA=ON" \
           "-DBINEXPORT_BINARYNINJA_CHANNEL=stable" \
-	        "-DBINEXPORT_BINARYNINJA_LATEST=ON"
+          "-DBINEXPORT_BINARYNINJA_LATEST=ON"
 
     - name: Build
       working-directory: ${{ runner.workspace }}/build

@@ -49,7 +49,9 @@ jobs:
           "-DBINEXPORT_ENABLE_IDAPRO=OFF" \
           "-DBINEXPORT_ENABLE_BINARYNINJA=ON" \
           "-DBINEXPORT_BINARYNINJA_CHANNEL=stable" \
-          "-DBINEXPORT_BINARYNINJA_LATEST=ON"
+          "-DBINEXPORT_BINARYNINJA_LATEST=ON" \
+          "-DBoost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include" \
+          "-DBoost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib"
       env:
         BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 

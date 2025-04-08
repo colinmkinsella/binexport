@@ -32,6 +32,7 @@ jobs:
       if: matrix.os == 'windows-2022'
       uses: MarkusJx/install-boost@v2
       with:
+        boost_version: 1.78.0
         platform_version: 2022
         toolset: msvc
 

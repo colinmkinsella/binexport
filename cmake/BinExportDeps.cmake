@@ -122,15 +122,17 @@ if(BINEXPORT_ENABLE_BINARYNINJA)
     FetchContent_Populate(binaryninjaapi)  # For binaryninjaapi_SOURCE_DIR
   endif()
   if(BINEXPORT_BINARYNINJA_LATEST)
-    #if(WIN32)
-    #  find_program(POWERSHELL_PATH NAMES powershell pwsh)
-    #  set(_stub_command "${POWERSHELL_PATH} ${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/regenerate-api-stubs.ps1")
-    #else()
-    set(_stub_command "${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/regenerate-api-stubs.sh")
-    #endif()
+    if(WIN32)
+      find_program(POWERSHELL_PATH NAMES powershell pwsh)
+      #set(_stub_command "${POWERSHELL_PATH} ${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/regenerate-api-stubs.ps1")
+      set(_stub_command "powershell.exe -File ${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/regenerate-api-stubs.ps1")
+    else()
+      set(_stub_command "${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/regenerate-api-stubs.sh")
+    endif()
     add_custom_command(
       OUTPUT ${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/binaryninjacore${_binexport_binaryninjacore_suffix}.cc
-      COMMAND ${_stub_command} ${binaryninjaapi_SOURCE_DIR} latest
+      #COMMAND ${_stub_command} ${binaryninjaapi_SOURCE_DIR} latest
+      COMMAND ${_stub_command} ${binaryninjaapi_SOURCE_DIR} stable 
       DEPENDS ${binaryninjaapi_SOURCE_DIR}/binaryninjacore.h
       COMMENT "Updating stubs"
     )

@@ -45,8 +45,7 @@ jobs:
       working-directory: ${{ runner.workspace }}/build
       shell: bash
       run: |
-        echo "${{github.workspace}}"
-        echo "${{steps.install-boost.outputs.BOOST_ROOT}}"
+        ls -R "${{steps.install-boost.outputs.BOOST_ROOT}}"
       #cmake "${{ github.workspace }}" -G Ninja \
       #  "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" \
       #  "-DBINEXPORT_ENABLE_IDAPRO=OFF" \

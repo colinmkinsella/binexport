@@ -31,6 +31,7 @@ jobs:
     - name: Enable Developer Command Prompt (Windows)
       if: matrix.os == 'windows-2022'
       uses: MarkusJx/install-boost@v2
+      id: install-boost
       with:
         boost_version: 1.83.0
         platform_version: 2022
@@ -45,7 +46,8 @@ jobs:
       working-directory: ${{ runner.workspace }}/build
       shell: bash
       run: |
-        echo "$BOOST_ROOT"
+        echo "${{github.workspace}}"
+        echo "${{steps.install-boost.outputs.BOOST_ROOT}}"
       #cmake "${{ github.workspace }}" -G Ninja \
       #  "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" \
       #  "-DBINEXPORT_ENABLE_IDAPRO=OFF" \

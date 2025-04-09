@@ -49,8 +49,7 @@ jobs:
           "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" \
           "-DBINEXPORT_ENABLE_IDAPRO=OFF" \
           "-DBINEXPORT_ENABLE_BINARYNINJA=ON" \
-          "-DBINEXPORT_BINARYNINJA_CHANNEL=stable" \
-          "-DBINEXPORT_BINARYNINJA_LATEST=ON"
+          "-DBINEXPORT_BINARYNINJA_CHANNEL=stable"
       env:
           BOOST_ROOT: ${{steps.install-boost.outputs.BOOST_ROOT}}
 

@@ -51,9 +51,9 @@ jobs:
           "-DBINEXPORT_ENABLE_BINARYNINJA=ON" \
           "-DBINEXPORT_BINARYNINJA_CHANNEL=stable" \
           "-DBINEXPORT_BINARYNINJA_LATEST=ON" \
-          "-DBOOST_ROOT=${{github.workspace}}/boost"
-          "-DBoost_INCLUDE_DIR=${{github.workspace}}/boost/include" \
-          "-DBoost_LIBRARY_DIRS=${{github.workspace}}/boost/lib"
+          "-DBOOST_ROOT=${{github.workspace}}\\boost" \
+          "-DBoost_INCLUDE_DIR=${{github.workspace}}\\boost\\include" \
+          "-DBoost_LIBRARY_DIRS=${{github.workspace}}\\boost\\lib"
       env:
         BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 

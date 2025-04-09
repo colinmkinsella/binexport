@@ -11,8 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - os: ubuntu-22.04
-        - os: macos-12
+        #- os: ubuntu-22.04
+        #- os: macos-12
         - os: windows-2022
     runs-on: ${{ matrix.os }}
 
@@ -45,17 +45,18 @@ jobs:
       working-directory: ${{ runner.workspace }}/build
       shell: bash
       run: |
-        cmake "${{ github.workspace }}" -G Ninja \
-          "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" \
-          "-DBINEXPORT_ENABLE_IDAPRO=OFF" \
-          "-DBINEXPORT_ENABLE_BINARYNINJA=ON" \
-          "-DBINEXPORT_BINARYNINJA_CHANNEL=stable" \
-          "-DBINEXPORT_BINARYNINJA_LATEST=ON" \
-          "-DBOOST_ROOT=${{github.workspace}}\\boost" \
-          "-DBoost_INCLUDE_DIR=${{github.workspace}}\\boost\\include" \
-          "-DBoost_LIBRARY_DIRS=${{github.workspace}}\\boost\\lib"
-      env:
-        BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+        dir /s /b ${{github.workspace}}/boost
+      #cmake "${{ github.workspace }}" -G Ninja \
+      #  "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" \
+      #  "-DBINEXPORT_ENABLE_IDAPRO=OFF" \
+      #  "-DBINEXPORT_ENABLE_BINARYNINJA=ON" \
+      #  "-DBINEXPORT_BINARYNINJA_CHANNEL=stable" \
+      #  "-DBINEXPORT_BINARYNINJA_LATEST=ON" \
+      #  "-DBOOST_ROOT=${{github.workspace}}\boost" \
+      #  "-DBoost_INCLUDE_DIR=${{github.workspace}}\boost\include" \
+      #  "-DBoost_LIBRARY_DIRS=${{github.workspace}}\boost\lib"
+      #env:
+      #    BOOST_ROOT: ${{github.workspace}}\boost
 
     - name: Build
       working-directory: ${{ runner.workspace }}/build

@@ -35,7 +35,6 @@ jobs:
       with:
         boost_version: 1.83.0
         platform_version: 2022
-        boost_install_dir: ${{github.workspace}}/boost
         toolset: msvc
 
     - name: Enable mold linker (Linux)

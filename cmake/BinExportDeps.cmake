@@ -120,15 +120,12 @@ if(BINEXPORT_ENABLE_BINARYNINJA)
   FetchContent_GetProperties(binaryninjaapi)
   if(NOT binaryninjaapi_POPULATED)
     #FetchContent_Populate(binaryninjaapi)  # For binaryninjaapi_SOURCE_DIR
-    FetchContent_MakeAvailable(binaryninjaapi)
-  endif()
-  
-  if(binaryninjaapi_POPULATED)
     set(HEADLESS TRUE)
     set(ENV{BN_API_PATH} "${binaryninjaapi_SOURCE_DIR}")
     message("*************TEST TEST TEST1****************")
     execute_process(COMMAND "${CMAKE_COMMAND}" "-E" "environment")
     message("*************TEST TEST TEST1****************")
+    FetchContent_MakeAvailable(binaryninjaapi)
     #add_subdirectory("${binaryninjaapi_SOURCE_DIR}" "${binaryninjaapi_BINARY_DIR}")
     if(MSVC)
       target_compile_options(binaryninjaapi PRIVATE

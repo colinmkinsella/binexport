@@ -567,7 +567,7 @@ bool Plugin::Init() {
 
 }  // namespace security::binexport
 
-extern "C" BINARYNINJAPLUGIN uint32_t CorePluginABIVersion() {
+/*extern "C" BINARYNINJAPLUGIN uint32_t CorePluginABIVersion() {
   // Previously, BinExport worked around Binary Ninja's ABI version handling,
   // to make sure to have it try and load the plugin unconditionally. This
   // was done in order to be able to support both the fast moving "dev"
@@ -577,8 +577,12 @@ extern "C" BINARYNINJAPLUGIN uint32_t CorePluginABIVersion() {
   // However, this proved to be no longer feasible at some point with
   // BinExport leading to crashes.
   return BN_MINIMUM_CORE_ABI_VERSION;
-}
+}*/
+extern "C"
+{
+  BN_DECLARE_CORE_ABI_VERSION
 
-extern "C" BINARYNINJAPLUGIN bool CorePluginInit() {
-  return security::binexport::Plugin::instance()->Init();
+  BINARYNINJAPLUGIN bool CorePluginInit() {
+    return security::binexport::Plugin::instance()->Init();
+  }
 }

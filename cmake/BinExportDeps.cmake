@@ -101,16 +101,14 @@ find_package(Protobuf 3.14 REQUIRED) # Make protobuf_generate_cpp available
 if(BINEXPORT_ENABLE_BINARYNINJA)
   if(BINEXPORT_BINARYNINJA_LATEST)
     set(_binexport_binaryninjacore_suffix "_latest")
-    set(_binexport_binaryninja_git_tag "dev")
+    set(_binexport_binaryninja_git_tag "origin/dev")
   else()
       if(BINEXPORT_BINARYNINJA_CHANNEL STREQUAL "stable")
         set(_binexport_binaryninjacore_suffix "_stable")
-        set(_binexport_binaryninja_git_tag
-            "9229ebde590febc9635d824ae9284ae170dee9da") # 2024-11-20 v4.2.6455
+        set(_binexport_binaryninja_git_tag "origin/master")
       else()
         set(_binexport_binaryninjacore_suffix "")
-        set(_binexport_binaryninja_git_tag
-            "608bd9c1f305c7d2f6f4812ed4d406ac3f5ef67a") # 2025-03-14
+        set(_binexport_binaryninja_git_tag "origin/dev")
       endif()
   endif()
   FetchContent_Declare(binaryninjaapi
@@ -119,37 +117,17 @@ if(BINEXPORT_ENABLE_BINARYNINJA)
   )
   FetchContent_GetProperties(binaryninjaapi)
   if(NOT binaryninjaapi_POPULATED)
-    FetchContent_Populate(binaryninjaapi)  # For binaryninjaapi_SOURCE_DIR
+    #FetchContent_Populate(binaryninjaapi)  # For binaryninjaapi_SOURCE_DIR
+    FetchContent_MakeAvailable(binaryninjaapi)
   endif()
-  if(BINEXPORT_BINARYNINJA_LATEST)
-    if(WIN32)
-      find_program(POWERSHELL_PATH NAMES powershell pwsh)
-      set(_stub_command "${POWERSHELL_PATH} ${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/regenerate-api-stubs.ps1")
-    else()
-      set(_stub_command "${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/regenerate-api-stubs.sh")
-    endif()
-    add_custom_command(
-      OUTPUT ${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/binaryninjacore${_binexport_binaryninjacore_suffix}.cc
-      #COMMAND ${_stub_command} ${binaryninjaapi_SOURCE_DIR} latest
-      COMMAND ${_stub_command} ${binaryninjaapi_SOURCE_DIR} stable 
-      DEPENDS ${binaryninjaapi_SOURCE_DIR}/binaryninjacore.h
-      COMMENT "Updating stubs"
-    )
-  endif()
-  add_library(binaryninjacore SHARED
-    ${BINEXPORT_SOURCE_DIR}/binaryninja/stubs/binaryninjacore${_binexport_binaryninjacore_suffix}.cc
-  )
-  set_target_properties(binaryninjacore PROPERTIES
-    SOVERSION 1
-  )
-  target_include_directories(binaryninjacore PRIVATE
-    "${binaryninjaapi_SOURCE_DIR}"
-  )
-  set(CORE_LIBRARY binaryninjacore)
-  set(BN_CORE_LIBRARY "${CORE_LIBRARY}")
-  set(HEADLESS TRUE)
+  
   if(binaryninjaapi_POPULATED)
-    add_subdirectory("${binaryninjaapi_SOURCE_DIR}" "${binaryninjaapi_BINARY_DIR}")
+    set(HEADLESS TRUE)
+    set(ENV{BN_API_PATH} "${binaryninjaapi_SOURCE_DIR}")
+    message("*************TEST TEST TEST1****************")
+    execute_process(COMMAND "${CMAKE_COMMAND}" "-E" "environment")
+    message("*************TEST TEST TEST1****************")
+    #add_subdirectory("${binaryninjaapi_SOURCE_DIR}" "${binaryninjaapi_BINARY_DIR}")
     if(MSVC)
       target_compile_options(binaryninjaapi PRIVATE
         /wd4005  # macro redefinition (NOMINMAX, _CRT_SECURE_NO_WARNINGS)

@@ -114,6 +114,7 @@ if(BINEXPORT_ENABLE_BINARYNINJA)
   FetchContent_Declare(binaryninjaapi
     GIT_REPOSITORY https://github.com/Vector35/binaryninja-api.git
     GIT_TAG        ${_binexport_binaryninja_git_tag}
+    GIT_SUBMODULES_RECURSE ON
   )
   FetchContent_GetProperties(binaryninjaapi)
   if(NOT binaryninjaapi_POPULATED)

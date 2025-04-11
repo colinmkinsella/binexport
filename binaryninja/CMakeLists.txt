@@ -12,18 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-message("*************TEST TEST TEST2****************")
-execute_process(COMMAND "${CMAKE_COMMAND}" "-E" "environment")
-message("*************TEST TEST TEST2****************")
-
 add_library(${binexport_bn_plugin_name} SHARED
   main_plugin.cc
   main_plugin.h
   log_sink.cc
   log_sink.h
-)
-target_link_libraries(${binexport_bn_plugin_name} PUBLIC
-  BinaryNinja::API
 )
 target_link_libraries(${binexport_bn_plugin_name} PRIVATE
   absl::log
@@ -31,6 +24,7 @@ target_link_libraries(${binexport_bn_plugin_name} PRIVATE
   absl::status
   absl::statusor
   absl::strings
+  BinaryNinja::API
   binexport_core
 )
 set_target_properties(${binexport_bn_plugin_name} PROPERTIES

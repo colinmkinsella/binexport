@@ -45,7 +45,7 @@ jobs:
       working-directory: ${{ runner.workspace }}/build
       shell: bash
       run: |
-        cmake "${{ github.workspace }}" -G Ninja \
+        cmake "${{ github.workspace }}" -G "Visual Studio 17 2022" \
           "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" \
           "-DBINEXPORT_ENABLE_IDAPRO=OFF" \
           "-DBINEXPORT_ENABLE_BINARYNINJA=ON" \

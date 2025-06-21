@@ -1,0 +1,13 @@
+[submodule "third-party/abseil-cpp"]
+	path = third-party/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git
+	branch = master
+[submodule "third-party/binaryninja-api"]
+	path = third-party/binaryninja-api
+	url = https://github.com/Vector35/binaryninja-api
+[submodule "third-party/protobuf"]
+	path = third-party/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
+[submodule "third-party/binexport/src"]
+	path = third-party/binexport/src
+	url = https://github.com/google/binexport.git

@@ -74,7 +74,7 @@ jobs:
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
         git fetch --tags
-        git checkout --force ${{matrix.version.name}}
+        git checkout --force ${{ matrix.version.name }}
         git submodule update --init --recursive
 
     - name: Patch api to allow building headlessly
@@ -82,7 +82,7 @@ jobs:
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       shell: bash
       run: |
-        git apply --verbose ${{matrix.version.patch-file}}
+        git apply --verbose ${{ matrix.version.patch }}
 
     - name: Enable Developer Command Prompt (Windows)
       if: matrix.os == 'windows-latest'

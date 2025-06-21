@@ -4,7 +4,7 @@ run-name: cmake-reusable
 env:
   BUILD_DIR: build
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       base_artifact_filename:
@@ -40,21 +40,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
         version: # BinaryNinja API Versions
-        #- name: dev
-        #- name: v5.0.7486-stable
-        #- name: v5.0.7290-stable
-        #- name: v4.2.6455-stable
-        #- name: v4.1.5902-stable
-        #  patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
-        #- name: v4.1.5747-stable
-        #  patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
-        #- name: v4.0.5336-stable
-        #  patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
-        #- name: v4.0.4958-stable
-        #  patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
+        - name: dev
+        - name: v5.0.7486-stable
+        - name: v5.0.7290-stable
+        - name: v4.2.6455-stable
+        - name: v4.1.5902-stable
+          patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
+        - name: v4.1.5747-stable
+          patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
+        - name: v4.0.5336-stable
+          patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
+        - name: v4.0.4958-stable
+          patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
         - name: v4.0.4911-stable
           patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
         - name: v3.5.4526-stable
@@ -65,12 +64,12 @@ jobs:
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
 
-    - name: Update submodules 
+    - name: Update submodules
       shell: bash
       working-directory: ${{ github.workspace }}
       run: git submodule update --init --recursive
 
-    - name: Get Specific Binary Ninja API Version 
+    - name: Get Specific Binary Ninja API Version
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
@@ -109,21 +108,12 @@ jobs:
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }}
 
-    #- name: Upload Build Artifacts
-    #  id: upload-build-artifacts
-    #  uses: actions/upload-artifact@v4
-    #  with:
-    #    name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
-    #    path: |
-    #      ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
-    #      ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib
-    #      ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.so
-
-    - name: Diagnostic Output
+    - name: Upload Build Artifacts
+      id: upload-build-artifacts
       uses: actions/upload-artifact@v4
-      #if: failure()
-      if: always()
       with:
-        name: files-${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
-        path: ${{ github.workspace }}/third-party/binaryninja-api/stubs
-      
+        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
+        path: |
+          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
+          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib
+          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.so

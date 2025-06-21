@@ -90,8 +90,9 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1.13.0
 
     - name: Enable mold linker (Linux)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
       uses: rui314/setup-mold@v1
+      ### if: matrix.os == 'ubuntu-latest'
 
     - name: Setup CMake and Ninja
       uses: lukka/get-cmake@v4.0.2
@@ -99,6 +100,12 @@ jobs:
         cmakeVersion: 4.0.2
         ninjaVersion: 1.12.1
 
+    - name: Python Check 
+      shell: bash
+      run: |
+        python --version
+        echo ${python --version}
+ 
     - name: Configure CMake
       shell: bash
       run: |
@@ -119,9 +126,9 @@ jobs:
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.so
 
-    - name: Diagnostic Output
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: files
-        path: ./*
+    #- name: Diagnostic Output
+    #  uses: actions/upload-artifact@v4
+    #  if: failure()
+    #  with:
+    #    name: error-${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
+    #    path: ./*

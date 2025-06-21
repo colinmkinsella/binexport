@@ -90,4 +90,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}
-        path: ${{ github.workspace }}/${{ env.BUILD_DIR }}/Binexport*.dll
+        path: ${{ github.workspace }}/${{ env.BUILD_DIR }}/${{ inputs.base_artifact_filename }}*

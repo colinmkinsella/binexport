@@ -73,12 +73,12 @@ jobs:
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
-        git fetch origin
+        git fetch --tags
         git checkout --force ${{matrix.version.name}}
         git submodule update --init --recursive
 
     - name: Patch api to allow building headlessly
-      if: matrix.version.patch-file
+      if: matrix.version.patch
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       shell: bash
       run: |

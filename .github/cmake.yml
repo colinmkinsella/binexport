@@ -1,0 +1,11 @@
+# Apparently you cannot specify default input for push and pull_requests.
+# Created this job as a wrapper for calling the reusable cmake workflow.
+name: cmake-build 
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  cmake-reusable:
+    uses: ./.github/workflows/cmake-reusable.yml

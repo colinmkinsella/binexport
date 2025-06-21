@@ -1,0 +1,94 @@
+name: cmake-reusable
+run-name: cmake-reusable
+
+env:
+  BUILD_DIR: build
+
+on: 
+  workflow_dispatch:
+    inputs:
+      base_artifact_filename:
+        description: >
+          "The base filename of the artifact .zip that is created OS and
+          architecture are appended"
+        required: false
+        default: "Binexport"
+        type: string
+      build_type:
+        description: "Debug or Release builds"
+        required: false
+        default: "Release"
+        type: string
+
+  workflow_call:
+    inputs:
+      base_artifact_filename:
+        description: >
+          "The base filename of the artifact .zip that is created OS and
+          architecture are appended"
+        required: false
+        default: "Binexport"
+        type: string
+      build_type:
+        description: "Debug or Release builds"
+        required: false
+        default: "Release"
+        type: string
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - os: ubuntu-latest
+          boost_toolset: gcc
+          boost_arch: x86
+        - os: macos-13
+          boost_toolset: clang
+          boost_arch: x86
+        - os: macos-latest
+          boost_toolset: clang
+          boost_arch: aarch64
+        - os: windows-latest
+          boost_toolset: msvc
+          boost_arch: x86
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Enable Developer Command Prompt (Windows)
+      if: matrix.os == windows-latest
+      uses: ilammy/msvc-dev-cmd@v1.13.0
+
+    - name: Enable mold linker (Linux)
+      if: matrix.os == ubuntu-latest
+      uses: rui314/setup-mold@v1
+
+    - name: Setup CMake and Ninja
+      uses: lukka/get-cmake@v4.0.2
+      with:
+        cmakeVersion: 4.0.2
+        ninjaVersion: 1.12.1
+
+    - name: Configure CMake
+      working-directory: ${{ github.workspace }}/build
+      shell: bash
+      run: |
+        cmake -S "${{ github.workspace }}" -G Ninja -B build \
+          "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
+
+    - name: Build
+      shell: bash
+      run: cmake --build ${{ $BUILD_DIR }}  
+
+    - name: Upload Build Artifacts
+      id: upload-build-artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}
+        path: ${{ github.workspace }}/${{ BUILD_DIR }}/Binexport*.dll

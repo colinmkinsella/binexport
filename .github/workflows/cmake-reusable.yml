@@ -54,6 +54,7 @@ jobs:
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
+        git fetch origin
         git checkout ${{ matrix.binaryninja-api-ver }}
 
     - name: Enable Developer Command Prompt (Windows)

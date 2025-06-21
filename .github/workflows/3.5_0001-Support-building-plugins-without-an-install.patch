@@ -49,6 +49,14 @@ index 3fe70f98..d85d2c17 100644
 +        target_link_libraries(binaryninjaapi PUBLIC "$<TARGET_PROPERTY:binaryninjacore_stubs,ARCHIVE_OUTPUT_DIRECTORY>/$<TARGET_PROPERTY:binaryninjacore_stubs,OUTPUT_NAME>.lib")
 +    else()
 +        target_link_options(binaryninjaapi PUBLIC "LINKER:--allow-shlib-undefined")
++        # Get the current link options for the target
++        get_property(CURRENT_LINK_OPTIONS TARGET my_executable PROPERTY LINK_OPTIONS)
++
++        # Remove --as-needed from the list
++        list(REMOVE_ITEM CURRENT_LINK_OPTIONS "-Wl,--as-needed")
++
++        # Set the modified link options back to the target
++        set_property(TARGET my_executable PROPERTY LINK_OPTIONS "${CURRENT_LINK_OPTIONS}")
 +    endif()
 +endif()
  

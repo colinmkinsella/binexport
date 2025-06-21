@@ -43,18 +43,18 @@ jobs:
         #os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
         os: [ubuntu-latest]
         version: # BinaryNinja API Versions
-        - name: dev
-        - name: v5.0.7486-stable
-        - name: v5.0.7290-stable
-        - name: v4.2.6455-stable
-        - name: v4.1.5902-stable
-          patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
-        - name: v4.1.5747-stable
-          patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
-        - name: v4.0.5336-stable
-          patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
-        - name: v4.0.4958-stable
-          patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
+        #- name: dev
+        #- name: v5.0.7486-stable
+        #- name: v5.0.7290-stable
+        #- name: v4.2.6455-stable
+        #- name: v4.1.5902-stable
+        #  patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
+        #- name: v4.1.5747-stable
+        #  patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
+        #- name: v4.0.5336-stable
+        #  patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
+        #- name: v4.0.4958-stable
+        #  patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
         - name: v4.0.4911-stable
           patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
         - name: v3.5.4526-stable
@@ -90,9 +90,8 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1.13.0
 
     - name: Enable mold linker (Linux)
-      if: matrix.os == 'ubuntu-22.04'
+      if: matrix.os == 'ubuntu-latest'
       uses: rui314/setup-mold@v1
-      ### if: matrix.os == 'ubuntu-latest'
 
     - name: Setup CMake and Ninja
       uses: lukka/get-cmake@v4.0.2
@@ -100,21 +99,15 @@ jobs:
         cmakeVersion: 4.0.2
         ninjaVersion: 1.12.1
 
-    - name: Python Generate Stubs 
+    - name: Configure CMake
       shell: bash
-      working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
-        python ./cmake/generate_stubs.py ./binaryninjacore.h ./stubs
- 
-    #- name: Configure CMake
-    #  shell: bash
-    #  run: |
-    #    cmake -S "${{ github.workspace }}" -G Ninja -B build \
-    #      "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
+        cmake -S "${{ github.workspace }}" -G Ninja -B build \
+          "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
 
-    #- name: Build
-    #  shell: bash
-    #  run: cmake --build ${{ env.BUILD_DIR }}
+    - name: Build
+      shell: bash
+      run: cmake --build ${{ env.BUILD_DIR }}
 
     #- name: Upload Build Artifacts
     #  id: upload-build-artifacts
@@ -131,6 +124,6 @@ jobs:
       #if: failure()
       if: always()
       with:
-        name: stubs-${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
+        name: files-${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
         path: ${{ github.workspace }}/third-party/binaryninja-api/stubs
       

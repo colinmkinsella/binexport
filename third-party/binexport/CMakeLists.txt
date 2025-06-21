@@ -165,5 +165,5 @@ protobuf_generate(
   IMPORT_DIRS ${PROJECT_SOURCE_DIR}/src/
   LANGUAGE cpp
   PROTOS ${PROJECT_SOURCE_DIR}/src/binexport2.proto
-  PROTOC_OUT_DIR ${PROJECT_BINARY_DIR}/src_include/third_party/zynamics/binexport
+  PROTOC_OUT_DIR ${CMAKE_BINARY_DIR}/src_include/third_party/zynamics/binexport
 )

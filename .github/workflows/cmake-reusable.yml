@@ -47,10 +47,13 @@ jobs:
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
-    - name: Switch to Binary Ninja API Version 
+    - name: Update submodules 
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: git submodule update --init --recursive
+
+    - name: Get Specific Binary Ninja API Version 
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |

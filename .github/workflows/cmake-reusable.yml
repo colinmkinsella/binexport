@@ -47,17 +47,17 @@ jobs:
         - name: v5.0.7290-stable
         - name: v4.2.6455-stable
         - name: v4.1.5902-stable
-          patch: ./.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
+          patch: ${{ github.workspace }}/.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
         - name: v4.1.5747-stable
-          patch: ./.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
+          patch: ${{ github.workspace }}/.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
         - name: v4.0.5336-stable
-          patch: ./.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
+          patch: ${{ github.workspace }}/.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
         - name: v4.0.4958-stable
-          patch: ./.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
+          patch: ${{ github.workspace }}/.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
         - name: v4.0.4911-stable
-          patch: ./.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
+          patch: ${{ github.workspace }}/.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
         - name: v3.5.4526-stable
-          patch: ./.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch
+          patch: ${{ github.workspace }}/.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch
     runs-on: ${{ matrix.os }}
 
     steps:

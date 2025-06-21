@@ -13,10 +13,10 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 3fe70f98..d85d2c17 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -23,10 +23,36 @@ add_library(binaryninjaapi STATIC ${BN_API_SOURCES})
+@@ -23,10 +23,44 @@ add_library(binaryninjaapi STATIC ${BN_API_SOURCES})
  target_include_directories(binaryninjaapi
      PUBLIC ${PROJECT_SOURCE_DIR})
- 
+
 -find_package(BinaryNinjaCore REQUIRED)
 -target_link_libraries(binaryninjaapi PUBLIC ${BinaryNinjaCore_LIBRARIES})
 -target_link_directories(binaryninjaapi PUBLIC ${BinaryNinjaCore_LIBRARY_DIRS})
@@ -32,7 +32,7 @@ index 3fe70f98..d85d2c17 100644
 +    elseif(MSVC)
 +        # Generate stubs.cpp with implementations of all the BNAPI functions
 +        execute_process(COMMAND python ${PROJECT_SOURCE_DIR}/cmake/generate_stubs.py ${PROJECT_SOURCE_DIR}/binaryninjacore.h ${PROJECT_BINARY_DIR}/stubs)
-+        
++
 +        # Compile those stubs into a stub library we can use to fool the linker
 +        add_library(binaryninjacore_stubs SHARED ${PROJECT_BINARY_DIR}/stubs/stubs.cpp)
 +        set_target_properties(binaryninjacore_stubs
@@ -43,7 +43,7 @@ index 3fe70f98..d85d2c17 100644
 +            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/stubs
 +        )
 +        target_include_directories(binaryninjacore_stubs PUBLIC ${PROJECT_SOURCE_DIR})
-+        
++
 +        # Be sure to only link against the stubs archive file
 +        add_dependencies(binaryninjaapi binaryninjacore_stubs)
 +        target_link_libraries(binaryninjaapi PUBLIC "$<TARGET_PROPERTY:binaryninjacore_stubs,ARCHIVE_OUTPUT_DIRECTORY>/$<TARGET_PROPERTY:binaryninjacore_stubs,OUTPUT_NAME>.lib")
@@ -59,12 +59,12 @@ index 3fe70f98..d85d2c17 100644
 +        set_property(TARGET my_executable PROPERTY LINK_OPTIONS "${CURRENT_LINK_OPTIONS}")
 +    endif()
 +endif()
- 
+
  set_target_properties(binaryninjaapi PROPERTIES
      CXX_STANDARD 17
-@@ -71,16 +97,18 @@ function(bn_install_plugin target)
+@@ -79,16 +105,18 @@ function(bn_install_plugin target)
          list(APPEND CMAKE_MODULE_PATH "${BN_API_SOURCE_DIR}/cmake")
- 
+
          # BinaryNinjaCore has the user plugins dir define that we want
 -        find_package(BinaryNinjaCore REQUIRED)
 -        if(WIN32)
@@ -197,7 +197,7 @@ index 00000000..4e062037
 +
 +    with open(options.core_header, 'r') as header:
 +        header_conts = header.read()
-+    
++
 +    # Quick preprocess of comments in case we have commented defs
 +    header_conts = re.sub(r'//.*\n', '\n', header_conts)
 +
@@ -219,6 +219,6 @@ index 00000000..4e062037
 +}
 +    """)
 \ No newline at end of file
--- 
+--
 2.43.3
 

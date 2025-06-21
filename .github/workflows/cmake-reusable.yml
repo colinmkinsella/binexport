@@ -112,7 +112,7 @@ jobs:
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}
+        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

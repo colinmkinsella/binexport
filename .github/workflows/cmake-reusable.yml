@@ -91,6 +91,6 @@ jobs:
       with:
         name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}
         path: |
-          ${{ github.workspace }}/${{ env.BUILD_DIR }}/${{ inputs.base_artifact_filename }}/*.dll
-          ${{ github.workspace }}/${{ env.BUILD_DIR }}/${{ inputs.base_artifact_filename }}/*.dylib
-          ${{ github.workspace }}/${{ env.BUILD_DIR }}/${{ inputs.base_artifact_filename }}/*.so
+          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
+          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib
+          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.so

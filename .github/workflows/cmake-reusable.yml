@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         #os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
-        os: [ubuntu-22.04]
+        os: [ubuntu-latest]
         version: # BinaryNinja API Versions
         - name: dev
         - name: v5.0.7486-stable
@@ -100,35 +100,37 @@ jobs:
         cmakeVersion: 4.0.2
         ninjaVersion: 1.12.1
 
-    - name: Python Check 
+    - name: Python Generate Stubs 
       shell: bash
+      working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
-        python --version
-        echo ${python --version}
+        python ./cmake/generate_stubs.py ./binaryninjacore.h ./stubs
  
-    - name: Configure CMake
-      shell: bash
-      run: |
-        cmake -S "${{ github.workspace }}" -G Ninja -B build \
-          "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
+    #- name: Configure CMake
+    #  shell: bash
+    #  run: |
+    #    cmake -S "${{ github.workspace }}" -G Ninja -B build \
+    #      "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
 
-    - name: Build
-      shell: bash
-      run: cmake --build ${{ env.BUILD_DIR }}
+    #- name: Build
+    #  shell: bash
+    #  run: cmake --build ${{ env.BUILD_DIR }}
 
-    - name: Upload Build Artifacts
-      id: upload-build-artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
-        path: |
-          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
-          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib
-          ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.so
-
-    #- name: Diagnostic Output
+    #- name: Upload Build Artifacts
+    #  id: upload-build-artifacts
     #  uses: actions/upload-artifact@v4
-    #  if: failure()
     #  with:
-    #    name: error-${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
-    #    path: ./*
+    #    name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
+    #    path: |
+    #      ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
+    #      ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib
+    #      ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.so
+
+    - name: Diagnostic Output
+      uses: actions/upload-artifact@v4
+      #if: failure()
+      if: always()
+      with:
+        name: stubs-${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
+        path: ${{ github.workspace }}/third-party/binaryninja-api/stubs
+      

@@ -62,11 +62,11 @@ jobs:
         submodules: recursive
 
     - name: Enable Developer Command Prompt (Windows)
-      if: matrix.os == windows-latest
+      if: matrix.os == 'windows-latest'
       uses: ilammy/msvc-dev-cmd@v1.13.0
 
     - name: Enable mold linker (Linux)
-      if: matrix.os == ubuntu-latest
+      if: matrix.os == 'ubuntu-latest'
       uses: rui314/setup-mold@v1
 
     - name: Setup CMake and Ninja
@@ -84,11 +84,11 @@ jobs:
 
     - name: Build
       shell: bash
-      run: cmake --build ${{ $BUILD_DIR }}  
+      run: cmake --build ${{ env.BUILD_DIR }}
 
     - name: Upload Build Artifacts
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}
-        path: ${{ github.workspace }}/${{ BUILD_DIR }}/Binexport*.dll
+        path: ${{ github.workspace }}/${{ env.BUILD_DIR }}/Binexport*.dll

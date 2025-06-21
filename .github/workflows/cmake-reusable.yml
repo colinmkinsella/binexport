@@ -76,7 +76,6 @@ jobs:
         ninjaVersion: 1.12.1
 
     - name: Configure CMake
-      working-directory: ${{ github.workspace }}/build
       shell: bash
       run: |
         cmake -S "${{ github.workspace }}" -G Ninja -B build \

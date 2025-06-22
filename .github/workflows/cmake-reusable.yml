@@ -19,6 +19,20 @@ on:
         required: false
         default: "Release"
         type: string
+      os:
+        description: "Operating System to Build On"
+        required: true
+        type: string
+      version:
+        description: "Binary Ninja API Tag or Commit"
+        required: true
+        default: "dev"
+        type: string
+      patch-file:
+        description: "Workflow Patch File for Older Versions of Binary Ninja"
+        required: False
+        default: ""
+        type: string
 
   workflow_call:
     inputs:
@@ -34,31 +48,24 @@ on:
         required: false
         default: "Release"
         type: string
+      os:
+        description: "Operating System to Build On"
+        required: true
+        type: string
+      version:
+        description: "Binary Ninja API Tag or Commit"
+        required: true
+        default: "dev"
+        type: string
+      patch-file:
+        description: "Workflow Patch File for Older Versions of Binary Ninja"
+        required: False
+        default: ""
+        type: string
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
-        version: # BinaryNinja API Versions
-        - name: dev
-        - name: v5.0.7486-stable
-        - name: v5.0.7290-stable
-        - name: v4.2.6455-stable
-        - name: v4.1.5902-stable
-          patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
-        - name: v4.1.5747-stable
-          patch-file: ../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch
-        - name: v4.0.5336-stable
-          patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
-        - name: v4.0.4958-stable
-          patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
-        - name: v4.0.4911-stable
-          patch-file: ../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch
-        - name: v3.5.4526-stable
-          patch-file: ../../.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ inputs.os }}
 
     steps:
     - name: Checkout repository and submodules
@@ -74,22 +81,22 @@ jobs:
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
         git fetch --tags
-        git checkout --force ${{ matrix.version.name }}
+        git checkout --force ${{ inputs.version }}
         git submodule update --init --recursive
 
     - name: Patch api to allow building headlessly
-      if: matrix.version.patch-file
+      if: inputs.patch-file
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
-        git apply --verbose ${{ matrix.version.patch-file }}
+        git apply --verbose ${{ inputs.patch-file }}
 
     - name: Enable Developer Command Prompt (Windows)
-      if: matrix.os == 'windows-latest'
+      if: inputs.os == 'windows-latest'
       uses: ilammy/msvc-dev-cmd@v1.13.0
 
     - name: Enable mold linker (Linux)
-      if: matrix.os == 'ubuntu-latest'
+      if: inputs.os == 'ubuntu-latest'
       uses: rui314/setup-mold@v1
 
     - name: Setup CMake and Ninja
@@ -112,7 +119,7 @@ jobs:
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.version.name }}
+        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

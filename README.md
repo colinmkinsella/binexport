@@ -9,7 +9,7 @@ or otherwise), it is just code that happens to be owned by Google.
 
 BinExport is the exporter component of
 [BinDiff](https://www.zynamics.com/software.html). This project builds the
-BinaryNinja C++ Plugin only.
+Binary Ninja C++ Plugin only.
 
 As the API for BinaryNinja changes frequently with new improvements, it can
 break the plugin. BinExport is not always trivial to build. This project aims

@@ -3,10 +3,6 @@ name: binaryninja-release
 on:
   workflow_call:
     inputs:
-      version:
-        description: "Binary Ninja API Tag or Commit"
-        required: true
-        type: string
       release_tag:
         description: "Tag for the release"
         required: true
@@ -17,6 +13,10 @@ on:
         type: string
       release_notes:
         description: "Release notes as a string."
+        required: true
+        type: string
+      version:
+        description: "Binary Ninja API Tag or Commit"
         required: true
         type: string
 
@@ -41,7 +41,7 @@ jobs:
         fi
 
     - name: Delete ${{ inputs.release_tag }} release
-      if: ${{ steps.check-if-release-exists.outputs.release_exists }} == true
+      if: ${{ steps.check-if-release-exists.outputs.release_exists }} == 'true'
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |

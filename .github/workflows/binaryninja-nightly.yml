@@ -10,7 +10,7 @@ jobs:
   binaryninja-nightly-dev-release:
     uses: ./.github/workflows/binaryninja-release.yml
     with:
-      release_tag: "dev"
+      release_tag: "binaryninja-dev"
       release_title: "Binexport Binary Ninja Plugin Dev Nightly Build"
       release_notes: >
         "Binary Ninja does frequent releases on their dev branch. For

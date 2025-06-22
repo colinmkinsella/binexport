@@ -111,7 +111,7 @@ jobs:
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
           "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
 
-    - name: Build
+    - name: Build ${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }}
 

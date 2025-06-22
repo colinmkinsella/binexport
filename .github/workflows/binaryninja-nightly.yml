@@ -7,7 +7,7 @@ on:
     - cron: '0 0 * * *' # Daily
 
 jobs:
-  binaryninga-nightly-release:
+  binaryninja-nightly-dev-release:
     uses: ./.github/workflows/binaryninja-release.yml
     with:
       release_tag: "dev"

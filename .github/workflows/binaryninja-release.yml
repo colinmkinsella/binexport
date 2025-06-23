@@ -1,5 +1,8 @@
 name: binaryninja-release
 
+env:
+  BINEXPORT_VERSION: "12"
+
 on:
   workflow_call:
     inputs:
@@ -94,7 +97,7 @@ jobs:
     uses: ./.github/workflows/cmake-reusable.yml
     needs: [create-release, check-for-patch]
     with:
-      base_artifact_filename: "BinExport-BinaryNinja"
+      base_artifact_filename: "BinExport${{ github.env.BINEXPORT_VERSION }}-BinaryNinja"
       build_type: "Release"
       os: ${{ matrix.os }}
       patch-file: ${{ needs.check-for-patch.outputs.patch_file }}

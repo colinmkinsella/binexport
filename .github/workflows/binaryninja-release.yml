@@ -34,10 +34,10 @@ jobs:
       run: |
         if gh release view ${{ inputs.release_tag }}; then
           echo "release found"
-          echo "release_exists=true" >> $GITHUB_ENV
+          echo "release_exists='true'" >> $GITHUB_OUTPUT
         else
           echo "release not found"
-          echo "release_exists=false" >> $GITHUB_ENV
+          echo "release_exists='false'" >> $GITHUB_OUTPUT
         fi
 
     - name: Delete ${{ inputs.release_tag }} release

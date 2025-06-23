@@ -59,17 +59,37 @@ jobs:
         --title "${{ inputs.release_title }}"
         --notes ${{ inputs.release_notes }}
 
+  check-for-patch:
+    name: check-for-patch
+    runs-on: ubuntu-latest
+    outputs:
+      patch_file: ${{ steps.get-patch-file.outputs.patch_file }}
+    steps:
+    - name: Checking For Patch for Older BinaryNinja Versions
+      id: get-patch-file
+      run: |
+        if [[ ${{ inputs.version }} == v3.5* ]]; then
+          echo "patch_file='../../.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch'" >> $GIHUB_OUTPUT
+        elif [[ ${{ inputs.version }} == v4.0* ]]; then
+          echo "patch_file='../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch'" >> $GIHUB_OUTPUT
+        elif [[ ${{ inputs.version }} == v4.1* ]]; then
+          echo "patch_file='../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch'" >> $GIHUB_OUTPUT
+        else
+          echo "patch_file=''" >> $GIHUB_OUTPUT
+        fi
+
   build-release:
     strategy:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "macos-13", "macos-latest", "windows-latest"]
     uses: ./.github/workflows/cmake-reusable.yml
-    needs: create-release
+    needs: [create-release, check-for-patch]
     with:
       base_artifact_filename: "BinExport-BinaryNinja"
       build_type: "Release"
       os: ${{ matrix.os }}
+      patch-file: ${{ needs.check-for-patch.outputs.patch_file }}
       version: ${{ inputs.version}}
 
   package-release:

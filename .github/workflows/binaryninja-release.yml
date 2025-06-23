@@ -68,19 +68,20 @@ jobs:
     - name: Checking For Patch for Older BinaryNinja Versions
       id: get-patch-file
       run: |
-        v3_5="v3.5"
+        v3_5="^v3.5"
         patch_3_5="../../.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch"
-        v4_0="v4.0"
+        v4_0="^v4.0"
         patch_4_0="../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch"
-        v4_1="v4.1"
+        v4_1="^v4.1"
         patch_4_1="../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch"
         no_patch=""
 
-        if [[ "${{ inputs.version }}" == "$v3_5"* ]]; then
+        if [[ ${{ inputs.version }} =~ $v3_5 ]]; then
+          echo "patch_file=$patch_3_5"
           echo "patch_file=$patch_3_5" >> $GIHUB_OUTPUT
-        elif [[ "${{ inputs.version }}" == "$v4_0"* ]]; then
+        elif [[ ${{ inputs.version }} =~ $v4_0 ]]; then
           echo "patch_file=$patch_4_0" >> $GIHUB_OUTPUT
-        elif [[ "${{ inputs.version }}" == "$v4_1"* ]]; then
+        elif [[ ${{ inputs.version }} =~ $v4_1 ]]; then
           echo "patch_file=$patch_4_1" >> $GIHUB_OUTPUT
         else
           echo "patch_file=$no_patch" >> $GIHUB_OUTPUT

@@ -1,5 +1,5 @@
 name: binaryninja-stable
-run-name: binaryninja-stable
+run-name: binaryninja-stable ${{ inputs.version }}
 
 on:
   workflow_dispatch:

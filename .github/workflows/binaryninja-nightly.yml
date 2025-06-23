@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/binaryninja-release.yml
     with:
       release_tag: "binaryninja-dev"
-      release_title: "Binexport Binary Ninja Plugin Dev Nightly Build"
+      release_title: "dev"
       release_notes: >
         "Binary Ninja does frequent releases on their dev branch. For
         the binexport plugin to work with the latest API, the plugin is built

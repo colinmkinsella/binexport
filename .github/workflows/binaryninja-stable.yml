@@ -83,7 +83,7 @@ jobs:
     if: github.event.inputs.version != ''
     with:
       release_tag: "binaryninja-${{ github.event.inputs.version }}"
-      release_title: "Binexport Binary Ninja Plugin Stable Build (${{ github.event.inputs.version }})"
+      release_title: "${{ github.event.inputs.version }}"
       release_notes: >
         "This is a build of Binexport plugin for Binary Ninja from the ${{ github.event.inputs.version }}
         stable Binary Ninja API."

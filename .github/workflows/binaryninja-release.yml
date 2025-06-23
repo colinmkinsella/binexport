@@ -67,7 +67,7 @@ jobs:
     uses: ./.github/workflows/cmake-reusable.yml
     needs: create-release
     with:
-      base_artifact_filename: "Binexport-BinaryNinja"
+      base_artifact_filename: "BinExport-BinaryNinja"
       build_type: "Release"
       os: ${{ matrix.os }}
       version: ${{ inputs.version}}

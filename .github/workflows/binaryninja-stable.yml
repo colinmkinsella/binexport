@@ -72,9 +72,9 @@ jobs:
     if: needs.check-for-release.outputs.build_within_24_hours == 'true'
     with:
       release_tag: "binaryninja-stable-${{ needs.check-for-release.outputs.latest_tag_name }}"
-      release_title: "Binexport Binary Ninja Plugin Latest Stable Build (${{ needs.check-for-release.outputs.latest_tag_name }})"
+      release_title: "BinExport Binary Ninja Plugin Latest Stable Build (${{ needs.check-for-release.outputs.latest_tag_name }})"
       release_notes: >
-        "This is a build of Binexport plugin for Binary Ninja from the latest
+        "This is a build of BinExport plugin for Binary Ninja from the latest
         stable Binary Ninja API ${{ needs.check-for-release.outputs.latest_tag_name }}."
       version: "${{ needs.check-for-release.outputs.latest_tag_name }}"
 
@@ -85,6 +85,6 @@ jobs:
       release_tag: "binaryninja-${{ github.event.inputs.version }}"
       release_title: "${{ github.event.inputs.version }}"
       release_notes: >
-        "This is a build of Binexport plugin for Binary Ninja from the ${{ github.event.inputs.version }}
+        "This is a build of BinExport plugin for Binary Ninja from the ${{ github.event.inputs.version }}
         stable Binary Ninja API."
       version: "${{ github.event.inputs.version }}"

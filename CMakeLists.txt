@@ -32,7 +32,7 @@ find_path(
 )
 add_subdirectory(${BN_API_PATH} binaryninja-api)
 
-set(bn_plugin_name Binexport${BINEXPORT_VERSION}-BinaryNinja)
+set(bn_plugin_name BinExport${BINEXPORT_VERSION}-BinaryNinja)
 add_library(${bn_plugin_name} SHARED ${SOURCES})
 
 target_include_directories(${bn_plugin_name} PUBLIC

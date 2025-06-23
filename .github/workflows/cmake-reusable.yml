@@ -1,5 +1,4 @@
 name: cmake-reusable
-run-name: cmake-reusable
 
 env:
   BUILD_DIR: build
@@ -111,7 +110,7 @@ jobs:
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
           "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
 
-    - name: Build ${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+    - name: Build
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }}
 

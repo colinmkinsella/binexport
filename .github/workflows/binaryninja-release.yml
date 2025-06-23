@@ -84,7 +84,7 @@ jobs:
           patch_file=$patch_4_1
         fi
 
-        echo "patch_file=$patch_file" >> $GIHUB_OUTPUT
+        echo "patch_file=$patch_file" >> $GITHUB_OUTPUT
 
   build-release:
     strategy:

@@ -1,5 +1,5 @@
-name: binaryninja-nightly
-run-name: binaryninja-nightly
+name: binaryninja-dev
+run-name: binaryninja-dev
 
 on:
   workflow_dispatch:

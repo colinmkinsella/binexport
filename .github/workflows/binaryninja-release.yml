@@ -76,15 +76,16 @@ jobs:
         patch_4_1="../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch"
 
         if [[ ${{ inputs.version }} =~ $v3_5 ]]; then
-          echo "patch_file=\"$patch_3_5\""
-          echo "patch_file=\"$patch_3_5\"" >> $GIHUB_OUTPUT
+          patch_file=$patch_3_5
         elif [[ ${{ inputs.version }} =~ $v4_0 ]]; then
-          echo "patch_file=\"$patch_4_0\"" >> $GIHUB_OUTPUT
+          patch_file=$patch_4_0
         elif [[ ${{ inputs.version }} =~ $v4_1 ]]; then
-          echo "patch_file=\"$patch_4_1\"" >> $GIHUB_OUTPUT
+          patch_file=$patch_4_1
         else
-          echo "patch_file=\"\"" >> $GIHUB_OUTPUT
+          patch_file=""
         fi
+
+        echo "patch_file=$patch_file" >> $GIHUB_OUTPUT
 
   build-release:
     strategy:

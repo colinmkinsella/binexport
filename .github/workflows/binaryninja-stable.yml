@@ -13,7 +13,7 @@ on:
 
 jobs:
   check-for-release:
-    if: inputs.version != ''
+    if: inputs.version == ''
     runs-on: ubuntu-latest
     outputs:
       build_within_24_hours: ${{ steps.is-build-within-24-hours.outputs.build_within_24_hours }}

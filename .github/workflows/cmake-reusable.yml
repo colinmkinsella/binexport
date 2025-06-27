@@ -110,6 +110,7 @@ jobs:
       run: |
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
           "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
+        echo "BINEXPORT_VERSION=$BINEXPORT_VERSION"
         echo "BINEXPORT_VERSION=$BINEXPORT_VERSION" >> $GITHUB_OUTPUT
 
     - name: Build

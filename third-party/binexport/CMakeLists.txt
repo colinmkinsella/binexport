@@ -25,6 +25,7 @@ include(protobuf)
 set(BINEXPORT_BINARY_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "" FORCE)
 set(BINEXPORT_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 set(BINEXPORT_VERSION ${PROJECT_VERSION} CACHE INTERNAL "" FORCE)
+set(ENV{BINEXPORT_VERSION} {BINEXPORT_VERSION})
 
 set(Boost_INCLUDE_DIR "${BINEXPORT_SOURCE_DIR}/src/boost_parts")
 
@@ -38,8 +39,8 @@ create_directory_symlink(
   "${CMAKE_BINARY_DIR}/src_include/third_party/absl"
 )
 
-configure_file(src/version.cc.in 
-  "${CMAKE_BINARY_DIR}/src_include/third_party/zynamics/binexport/version.cc" 
+configure_file(src/version.cc.in
+  "${CMAKE_BINARY_DIR}/src_include/third_party/zynamics/binexport/version.cc"
   ESCAPE_QUOTES @ONLY
 )
 

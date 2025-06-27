@@ -105,10 +105,12 @@ jobs:
         ninjaVersion: 1.12.1
 
     - name: Configure CMake
+      id: configure-cmake
       shell: bash
       run: |
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
           "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
+        echo "BINEXPORT_VERSION=$BINEXPORT_VERSION" >> $GITHUB_OUTPUT
 
     - name: Build
       shell: bash
@@ -118,7 +120,7 @@ jobs:
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+        name: ${{ inputs.base_artifact_filename }}${{ steps.configure-cmake.outputs.BINEXPORT_VERSION }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

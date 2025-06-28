@@ -12,7 +12,6 @@ on:
         type: string
       binexport_version:
         description: "BinExport Tag or Commit for Specific Version of the Library from Google"
-        default: ""
         required: false
         type: string
       delete_existing_release:
@@ -22,17 +21,14 @@ on:
         type: boolean
       plugin_version:
         description: "Version Number Tag or Commit for this Plugin (uses latest if not provided)"
-        default: ""
         required: false
         type: string
       release_tag:
         description: "Tag for the release (uses plugin version if not provided)"
-        default: ""
         required: false
         type: string
       release_title:
         description: "Release title (uses plugin version if not provided)"
-        default: ""
         required: false
         type: string
       release_notes:

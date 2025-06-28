@@ -12,7 +12,7 @@ on:
         description: "BinExport Tag or Commit for Specific Version of the Library from Google"
         required: false
         type: string
-       plugin_version:
+      plugin_version:
         description: "Version Number for this Plugin"
         required: false
         type: string

@@ -8,7 +8,11 @@ on:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
         required: true
         type: string
-      plugin_version:
+      binaryexport_version:
+        description: "BinExport Tag or Commit for Specific Version of the Library from Google"
+        required: false
+        type: string
+       plugin_version:
         description: "Version Number for this Plugin"
         required: false
         type: string
@@ -75,8 +79,9 @@ jobs:
     needs: check-for-release
     if: needs.check-for-release.outputs.build_within_24_hours == 'true'
     with:
-      binaryninja_version: "${{ needs.check-for-release.outputs.latest_tag_name }}"
-      release_tag: "${{ needs.check-for-release.outputs.latest_tag_name }}"
+      binaryninja_version: ${{ needs.check-for-release.outputs.latest_tag_name }}
+      binexport_version: ${{ inputs.binexport_version }}
+      release_tag: ${{ needs.check-for-release.outputs.latest_tag_name }}
       release_title: "BinExport Binary Ninja Plugin Latest Stable Build (${{ needs.check-for-release.outputs.latest_tag_name }})"
       release_notes: >
         "This is a build of BinExport plugin for Binary Ninja from the latest
@@ -84,9 +89,10 @@ jobs:
 
   binaryninja-stable-release:
     uses: ./.github/workflows/binaryninja-release.yml
-    if: github.event.inputs.binaryninja_version != ''
+    if: inputs.binaryninja_version != ''
     with:
-      binaryninja_version: "${{ github.event.inputs.binaryninja_version }}"
+      binaryninja_version: ${{ inputs.binaryninja_version }}
+      binexport_version: ${{ inputs.binexport_version }}
       release_notes: >
-        "This is a build of BinExport plugin for Binary Ninja from the ${{ github.event.inputs.binaryninja_version }}
+        "This is a build of BinExport plugin for Binary Ninja from the ${{ inputs.binaryninja_version }}
         stable Binary Ninja API."

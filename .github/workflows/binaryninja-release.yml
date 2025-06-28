@@ -10,6 +10,15 @@ on:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
         required: true
         type: string
+      binexport_version:
+        description: "BinExport Tag or Commit for Specific Version of the Library from Google"
+        required: false
+        type: string
+      delete_existing_release:
+        description: "Delete the Existing Release and Recreate"
+        default: false
+        required: false
+        type: boolean
       plugin_version:
         description: "Version Number Tag or Commit for this Plugin (uses latest if not provided)"
         required: false
@@ -65,6 +74,7 @@ jobs:
     with:
       base_artifact_filename: "BinExport"
       binaryninja_version: ${{ inputs.binaryninja_version }}
+      binexport_version: ${{ inputs.binexport_version }}
       build_type: "Release"
       os: ${{ matrix.os }}
       patch_file: ${{ needs.check-for-patch.outputs.patch_file }}
@@ -77,8 +87,30 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Release Tag Check
+      id: get-release-tag
+      run: |
+        # Checking if Release Tag is Empty, if it is empty then it is using Plugin Version
+        if [ -z ${{ inputs.release_tag }} ]; then
+          echo "release_tag=${{ needs.build-release.outputs.plugin_version }} " >> $GITHUB_OUTPUT
+        else
+          echo "release_tag=${{ inputs.release_tag }} " >> $GITHUB_OUTPUT
+        fi
+
+    - name: Release Title Check
+      id: get-release-title
+      run: |
+        # Checking if Release Title is Empty, if it is empty then it is using Plugin Version
+        if [ -z ${{ inputs.release_title }} ]; then
+          echo "release_title=${{ needs.build-release.outputs.plugin_version }} " >> $GITHUB_OUTPUT
+        else
+          echo "release_title=${{ inputs.release_title }} " >> $GITHUB_OUTPUT
+        fi
+
+
     - name: Check if ${{ inputs.release_tag }} release exists
       id: check-if-release-exists
+      if: ${{ inputs.delete_existing_release == true }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -91,7 +123,9 @@ jobs:
         fi
 
     - name: Delete ${{ inputs.release_tag }} release
-      if: ${{ steps.check-if-release-exists.outputs.release_exists == 'true' }}
+      if: >
+        ${{ steps.check-if-release-exists.outputs.release_exists == 'true' }} &&
+        ${{ inputs.delete_existing_release == true }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -101,22 +135,13 @@ jobs:
           sleep 5;
         done
 
-    - name: Create Release From Specified Release Tag
-      if: ${{ inputs.plugin_version == '' }}
+    - name: Create Release From Tag
+      if: ${{ inputs.delete_existing_release == true}}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-
-        gh release create ${{ inputs.release_tag }}
+        gh release create ${{ steps.get-release-tag.outputs.plugin_version }}
         --title "${{ inputs.release_title }}"
-        --notes ${{ inputs.release_notes }}
-
-    - name: Create Release From Plugin Version
-      if: ${{ inputs.plugin_version != '' }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: >-
-        gh release create ${{ needs.build-release.outputs.plugin_version }}
-        --title "${{ needs.build-release.outputs.plugin_version }}"
         --notes ${{ inputs.release_notes }}
 
     - name: Create Release Directory

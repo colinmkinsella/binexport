@@ -33,7 +33,7 @@ jobs:
           patch-file: "../../.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch"
     uses: ./.github/workflows/cmake-reusable.yml
     with:
+      binaryninja-version: ${{ matrix.version.name }}
       os: ${{ matrix.os }}
-      version: ${{ matrix.version.name }}
       patch-file: ${{ matrix.version.patch-file }}
 

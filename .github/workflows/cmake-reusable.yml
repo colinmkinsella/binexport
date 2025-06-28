@@ -13,6 +13,11 @@ on:
         required: false
         default: "BinExport-BinaryNinja"
         type: string
+      binaryninja-version:
+        description: "Binary Ninja API Tag or Commit for Specific Version of the API"
+        required: true
+        default: "dev"
+        type: string
       build_type:
         description: "Debug or Release builds"
         required: false
@@ -26,11 +31,6 @@ on:
         description: "Workflow Patch File for Older Versions of Binary Ninja"
         required: False
         default: ""
-        type: string
-      version:
-        description: "Binary Ninja API Tag or Commit"
-        required: true
-        default: "dev"
         type: string
 
   workflow_call:
@@ -42,6 +42,11 @@ on:
         required: false
         default: "BinExport"
         type: string
+      binaryninja-version:
+        description: "Binary Ninja API Tag or Commit for Specific Version of the API"
+        required: true
+        default: "dev"
+        type: string
       build_type:
         description: "Debug or Release builds"
         required: false
@@ -55,11 +60,6 @@ on:
         description: "Workflow Patch File for Older Versions of Binary Ninja"
         required: False
         default: ""
-        type: string
-      version:
-        description: "Binary Ninja API Tag or Commit"
-        required: true
-        default: "dev"
         type: string
 
 jobs:
@@ -90,7 +90,7 @@ jobs:
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
         git fetch --tags
-        git checkout --force ${{ inputs.version }}
+        git checkout --force ${{ inputs.binaryninja-version }}
         git submodule update --init --recursive
 
         # Attempt to get the tag name
@@ -143,7 +143,7 @@ jobs:
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.binaryninja-version }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

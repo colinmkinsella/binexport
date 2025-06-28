@@ -1,19 +1,34 @@
 name: binaryninja-stable
-run-name: binaryninja-stable ${{ inputs.version }}
+run-name: binaryninja-stable ${{ inputs.binaryninja-version }}
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "Binary Ninja API Stable Tag"
+      binaryninja-version:
+        description: "Binary Ninja API Tag or Commit for Specific Version of the API"
         required: true
         type: string
   schedule:
     - cron: '0 1 * * *' # Daily
 
 jobs:
+  get-plugin-version:
+    runs-on: ubuntu-latest
+    outputs:
+      plugin_version: ${{ steps.get-local-plugin-version.outputs.plugin_version }}
+    steps:
+    - name: Get the Version Number of this Plugin
+      id: get-local-plugin-version
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        cat VERSION_PLUGIN.txt >> $GITHUB_OUTPUT
+        cat VERSION_PLUGIN.txt | awk '{print "BinExport Plugin Version: "$1}'
+
+
+
   check-for-release:
-    if: inputs.version == ''
+    if: inputs.binaryninja-version == ''
     runs-on: ubuntu-latest
     outputs:
       build_within_24_hours: ${{ steps.is-build-within-24-hours.outputs.build_within_24_hours }}
@@ -68,23 +83,26 @@ jobs:
 
   binaryninja-stable-release-last-24:
     uses: ./.github/workflows/binaryninja-release.yml
-    needs: check-for-release
+    needs: [check-for-release, get-plugin-version]
     if: needs.check-for-release.outputs.build_within_24_hours == 'true'
     with:
+      binaryninja-version: "${{ needs.check-for-release.outputs.latest_tag_name }}"
+      plugin-version: "${{ needs.get-plugin-version.outputs.plugin_version }}"
       release_tag: "${{ needs.check-for-release.outputs.latest_tag_name }}"
       release_title: "BinExport Binary Ninja Plugin Latest Stable Build (${{ needs.check-for-release.outputs.latest_tag_name }})"
       release_notes: >
         "This is a build of BinExport plugin for Binary Ninja from the latest
         stable Binary Ninja API ${{ needs.check-for-release.outputs.latest_tag_name }}."
-      version: "${{ needs.check-for-release.outputs.latest_tag_name }}"
 
   binaryninja-stable-release:
     uses: ./.github/workflows/binaryninja-release.yml
-    if: github.event.inputs.version != ''
+    needs: get-plugin-version
+    if: github.event.inputs.binaryninja-version != ''
     with:
-      release_tag: "${{ github.event.inputs.version }}"
-      release_title: "${{ github.event.inputs.version }}"
+      binaryninja-version: "${{ github.event.inputs.binaryninja-version }}"
+      plugin-version: "${{ needs.get-plugin-version.outputs.plugin_version }}"
+      release_tag: "${{ needs.get-plugin-version.outputs.plugin_version }}"
+      release_title: "${{ needs.get-plugin-version.outputs.plugin_version }}"
       release_notes: >
-        "This is a build of BinExport plugin for Binary Ninja from the ${{ github.event.inputs.version }}
+        "This is a build of BinExport plugin for Binary Ninja from the ${{ github.event.inputs.binaryninja-version }}
         stable Binary Ninja API."
-      version: "${{ github.event.inputs.version }}"

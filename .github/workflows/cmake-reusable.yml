@@ -76,6 +76,7 @@ on:
 
 jobs:
   build:
+    name: Build ${{ inputs.os }}
     runs-on: ${{ inputs.os }}
     outputs:
       plugin_version: ${{ steps.get-plugin-version.outputs.plugin_version }}
@@ -121,14 +122,14 @@ jobs:
     - name: Update Binexport Library Version File
       id: get-binexport-version
       shell: bash
-      working-directory: ${{ github.workspace }}
+      working-directory: ${{ github.workspace }}/third-part/binexport/src
       run: |
         # Putting in format of major version - date (12-20250619)
-        cat ./third-party/binexport/src/CMakeLists.txt | grep "project(binexport VERSION" | \
-          awk -F " " '{print $3}' | awk -F ")" '{print $1}' | tr -d '\n' > VERSION_BINEXPORT_LIB.txt
-        git log -1 --pretty=format:%ad --date=format:"-%Y%m%d" >> VERSION_BINEXPORT_LIB.txt
-        cat VERSION_BINEXPORT_LIB.txt | awk '{print "BinExport Lib Version: "$1}'
-        cat VERSION_BINEXPORT_LIB.txt | awk '{print "binexport_version="$1}' >> $GITHUB_OUTPUT
+        cat CMakeLists.txt | grep "project(binexport VERSION" | \
+          awk -F " " '{print $3}' | awk -F ")" '{print $1}' | tr -d '\n' > ../../../VERSION_BINEXPORT_LIB.txt
+        git log -1 --pretty=format:%ad --date=format:"-%Y%m%d" >> ../../../VERSION_BINEXPORT_LIB.txt
+        cat ../../../VERSION_BINEXPORT_LIB.txt | awk '{print "BinExport Lib Version: "$1}'
+        cat ../../../VERSION_BINEXPORT_LIB.txt | awk '{print "binexport_version="$1}' >> $GITHUB_OUTPUT
 
     - name: Get Specific Binary Ninja API Version
       id: get-binaryninja-version

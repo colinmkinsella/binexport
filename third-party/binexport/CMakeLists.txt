@@ -16,7 +16,16 @@ cmake_minimum_required(VERSION 3.20)
 
 cmake_policy(VERSION 3.20..4.0)
 
-project(binexport VERSION 12)  # Only major version is used
+# Getting the BinExport Version Number from a local file that is generated
+# during the GitHub workflow. This can be manually updated. It is in the format
+# 12-20250619 where 12 is the major version and the date is the latest commit
+# that is being built.
+file(READ ../../VERSION_BINEXPORT_LIB.txt binexport_lib_version)
+set(BINEXPORT_VERSION_COMMIT_DATE ${binexport_lib_version} CACHE INTERNAL "" FORCE)
+string(REGEX MATCH "[0-9]+" extracted_number "${BINEXPORT_VERSION_COMMIT_DATE}")
+set(BINEXPORT_MAJOR_VERSION ${extracted_number} CACHE INTERNAL "" FORCE)
+
+project(binexport VERSION ${BINEXPORT_MAJOR_VERSION})  # Only major version is used
 
 include(abseil)
 include(protobuf)
@@ -24,8 +33,6 @@ include(protobuf)
 # BinExport settings
 set(BINEXPORT_BINARY_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "" FORCE)
 set(BINEXPORT_SOURCE_DIR ${PROJECT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
-set(BINEXPORT_VERSION ${PROJECT_VERSION} CACHE INTERNAL "" FORCE)
-set(ENV{BINEXPORT_VERSION} ${PROJECT_VERSION} CACHE INTERNAL "" FORCE)
 
 set(Boost_INCLUDE_DIR "${BINEXPORT_SOURCE_DIR}/src/boost_parts")
 

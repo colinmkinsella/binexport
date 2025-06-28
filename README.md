@@ -48,6 +48,15 @@ There are just a few dependencies to satisfy:
     *   Binary Ninja SDK
     *   BinExport (pulling the whole project, but just using the library)
 
+### Manually Update the Version Numbers
+
+The GitHub workflow will autogenerate the version number based on the
+CMakeLists.txt in the main Google BinExport (Library) project and the
+BinaryNinja API (Library) that are both submodules. Locally this is saved as
+`VERSION_BINEXPORT_LIB.txt` and `VERSION_BINARYNINJA_LIB`. This process is not
+automated locally, so if you desire the version to be updated you will have to
+manually update it.
+
 ### Building
 
 ```Bash

@@ -75,6 +75,15 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: git submodule update --init --recursive
 
+    # Putting in format of major version - date (12-20250619)
+    - name: Update Binexport Library Version File
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        cat ./third-party/binexport/src/CMakeLists.txt | grep "project(binexport VERSION" | \
+          awk -F " " '{print $3}' | awk -F ")" '{print $1}' | tr -d '\n' > VERSION_BINEXPORT_LIB.txt
+        git log -1 --pretty=format:%ad --date=format:"-%Y%m%d" >> VERSION_BINEXPORT_LIB.txt
+
     - name: Get Specific Binary Ninja API Version
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
@@ -82,6 +91,7 @@ jobs:
         git fetch --tags
         git checkout --force ${{ inputs.version }}
         git submodule update --init --recursive
+        cat ${{ inputs.version }} > VERSION_BINARYNINJA.txt
 
     - name: Patch api to allow building headlessly
       if: inputs.patch-file
@@ -110,8 +120,6 @@ jobs:
       run: |
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
           "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
-        echo "BINEXPORT_VERSION=$BINEXPORT_VERSION"
-        echo "BINEXPORT_VERSION=$BINEXPORT_VERSION" >> $GITHUB_OUTPUT
 
     - name: Build
       shell: bash
@@ -121,7 +129,7 @@ jobs:
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}${{ steps.configure-cmake.outputs.BINEXPORT_VERSION }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

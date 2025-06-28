@@ -6,21 +6,21 @@ env:
 on:
   workflow_call:
     inputs:
-      binaryninja-version:
+      binaryninja_version:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
         required: true
         type: string
-      plugin-version:
-        description: "The Version of this Plugin"
-        required: true
+      plugin_version:
+        description: "Version Number Tag or Commit for this Plugin (uses latest if not provided)"
+        required: false
         type: string
       release_tag:
-        description: "Tag for the release"
-        required: true
+        description: "Tag for the release (uses plugin version if not provided)"
+        required: false
         type: string
       release_title:
-        description: "Release title."
-        required: true
+        description: "Release title (uses plugin version if not provided)"
+        required: false
         type: string
       release_notes:
         description: "Release notes as a string."
@@ -28,8 +28,51 @@ on:
         type: string
 
 jobs:
+  check-for-patch:
+    name: check-for-patch
+    runs-on: ubuntu-latest
+    outputs:
+      patch_file: ${{ steps.get-patch-file.outputs.patch_file }}
+    steps:
+    - name: Checking For Patch for Older BinaryNinja Versions
+      id: get-patch-file
+      run: |
+        v3_5="^v3.5"
+        patch_3_5="../../.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch"
+        v4_0="^v4.0"
+        patch_4_0="../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch"
+        v4_1="^v4.1"
+        patch_4_1="../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch"
+        patch_file=""
+
+        if [[ ${{ inputs.binaryninja_version }} =~ $v3_5 ]]; then
+          patch_file=$patch_3_5
+        elif [[ ${{ inputs.binaryninja_version }} =~ $v4_0 ]]; then
+          patch_file=$patch_4_0
+        elif [[ ${{ inputs.binaryninja_version }} =~ $v4_1 ]]; then
+          patch_file=$patch_4_1
+        fi
+
+        echo "patch_file=$patch_file" >> $GITHUB_OUTPUT
+
+  build-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-13", "macos-latest", "windows-latest"]
+    uses: ./.github/workflows/cmake-reusable.yml
+    needs: check-for-patch
+    with:
+      base_artifact_filename: "BinExport"
+      binaryninja_version: ${{ inputs.binaryninja_version }}
+      build_type: "Release"
+      os: ${{ matrix.os }}
+      patch_file: ${{ needs.check-for-patch.outputs.patch_file }}
+      plugin_version: ${{ inputs.plugin_version }}
+
   create-release:
     name: create-release
+    needs: build-release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -58,7 +101,8 @@ jobs:
           sleep 5;
         done
 
-    - name: Create Release
+    - name: Create Release From Specified Release Tag
+      if: ${{ inputs.plugin_version == '' }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-
@@ -66,53 +110,14 @@ jobs:
         --title "${{ inputs.release_title }}"
         --notes ${{ inputs.release_notes }}
 
-  check-for-patch:
-    name: check-for-patch
-    runs-on: ubuntu-latest
-    outputs:
-      patch_file: ${{ steps.get-patch-file.outputs.patch_file }}
-    steps:
-    - name: Checking For Patch for Older BinaryNinja Versions
-      id: get-patch-file
-      run: |
-        v3_5="^v3.5"
-        patch_3_5="../../.github/workflows/3.5_0001-Support-building-plugins-without-an-install.patch"
-        v4_0="^v4.0"
-        patch_4_0="../../.github/workflows/4.0_0001-Support-building-plugins-without-an-install.patch"
-        v4_1="^v4.1"
-        patch_4_1="../../.github/workflows/4.1_0001-Support-building-plugins-without-an-install.patch"
-        patch_file=""
-
-        if [[ ${{ inputs.binaryninja-version }} =~ $v3_5 ]]; then
-          patch_file=$patch_3_5
-        elif [[ ${{ inputs.binaryninja-version }} =~ $v4_0 ]]; then
-          patch_file=$patch_4_0
-        elif [[ ${{ inputs.binaryninja-version }} =~ $v4_1 ]]; then
-          patch_file=$patch_4_1
-        fi
-
-        echo "patch_file=$patch_file" >> $GITHUB_OUTPUT
-
-  build-release:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-latest", "macos-13", "macos-latest", "windows-latest"]
-    uses: ./.github/workflows/cmake-reusable.yml
-    needs: [create-release, check-for-patch]
-    with:
-      base_artifact_filename: "BinExport${{ github.env.BINEXPORT_VERSION }}-BinaryNinja"
-      binaryninja-version: ${{ inputs.binaryninja-version }}
-      build_type: "Release"
-      os: ${{ matrix.os }}
-      patch-file: ${{ needs.check-for-patch.outputs.patch_file }}
-
-  package-release:
-    needs: build-release
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
+    - name: Create Release From Plugin Version
+      if: ${{ inputs.plugin_version != '' }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: >-
+        gh release create ${{ needs.build-release.outputs.plugin_version }}
+        --title "${{ needs.build-release.outputs.plugin_version }}"
+        --notes ${{ inputs.release_notes }}
 
     - name: Create Release Directory
       working-directory: ${{ github.workspace }}

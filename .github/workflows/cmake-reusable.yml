@@ -11,9 +11,9 @@ on:
           "The base filename of the artifact .zip that is created OS and
           architecture are appended"
         required: false
-        default: "BinExport-BinaryNinja"
+        default: "BinExport"
         type: string
-      binaryninja-version:
+      binaryninja_version:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
         required: true
         default: "dev"
@@ -27,10 +27,14 @@ on:
         description: "Operating System to Build On"
         required: true
         type: string
-      patch-file:
+      patch_file:
         description: "Workflow Patch File for Older Versions of Binary Ninja"
         required: False
         default: ""
+        type: string
+      plugin_version:
+        description: "Version Number for this Plugin"
+        required: false
         type: string
 
   workflow_call:
@@ -42,7 +46,7 @@ on:
         required: false
         default: "BinExport"
         type: string
-      binaryninja-version:
+      binaryninja_version:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
         required: true
         default: "dev"
@@ -56,26 +60,66 @@ on:
         description: "Operating System to Build On"
         required: true
         type: string
-      patch-file:
+      patch_file:
         description: "Workflow Patch File for Older Versions of Binary Ninja"
         required: False
         default: ""
         type: string
+      plugin_version:
+        description: "Version Number Tag or Commit for this Plugin"
+        required: false
+        type: string
+    outputs:
+      plugin_version:
+        description: "The Version of This Plugin in String Format (can change depending on commit)"
+        value: ${{ jobs.build.outputs.plugin_version }}
 
 jobs:
   build:
     runs-on: ${{ inputs.os }}
+    outputs:
+      plugin_version: ${{ steps.get-plugin-version.outputs.plugin_version }}
 
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
+
+    - name: Switch to Specific Plugin Version
+      if: inputs.plugin_version
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        git fetch --tags
+        git checkout --force ${{ inputs.plugin_version }}
+        git submodule update --init --recursive
+
+        # Attempt to get the tag name
+        TAG=$(git describe --exact-match --tags 2>/dev/null)
+
+        # Check if a tag was found
+        if [ -n "$TAG" ]; then
+          echo "$TAG" > VERSION_PLUGIN.txt
+        else
+          # If no tag, get the current branch name
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "$BRANCH" > ${{ github.workspace }}/VERSION_PLUGIN.txt
+        fi
 
     - name: Update submodules
       shell: bash
       working-directory: ${{ github.workspace }}
       run: git submodule update --init --recursive
 
+    - name: Get the Version Number of this Plugin
+      id: get-plugin-version
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        cat VERSION_PLUGIN.txt | awk '{print "BinExport Plugin Version: "$1}'
+        cat VERSION_PLUGIN.txt | awk '{print "plugin_version="$1}' >> $GITHUB_OUTPUT
+
     - name: Update Binexport Library Version File
+      id: get-binexport-version
       shell: bash
       working-directory: ${{ github.workspace }}
       run: |
@@ -84,13 +128,15 @@ jobs:
           awk -F " " '{print $3}' | awk -F ")" '{print $1}' | tr -d '\n' > VERSION_BINEXPORT_LIB.txt
         git log -1 --pretty=format:%ad --date=format:"-%Y%m%d" >> VERSION_BINEXPORT_LIB.txt
         cat VERSION_BINEXPORT_LIB.txt | awk '{print "BinExport Lib Version: "$1}'
+        cat VERSION_BINEXPORT_LIB.txt | awk '{print "binexport_version="$1}' >> $GITHUB_OUTPUT
 
     - name: Get Specific Binary Ninja API Version
+      id: get-binaryninja-version
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
         git fetch --tags
-        git checkout --force ${{ inputs.binaryninja-version }}
+        git checkout --force ${{ inputs.binaryninja_version }}
         git submodule update --init --recursive
 
         # Attempt to get the tag name
@@ -99,20 +145,21 @@ jobs:
         # Check if a tag was found
         if [ -n "$TAG" ]; then
           echo "$TAG" > VERSION_BINARYNINJA_LIB.txt
-          cat VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
         else
           # If no tag, get the current branch name
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
           echo "$BRANCH" > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
-          cat VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
         fi
 
+        cat VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
+        cat VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
+
     - name: Patch api to allow building headlessly
-      if: inputs.patch-file
+      if: inputs.patch_file
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
-        git apply --verbose ${{ inputs.patch-file }}
+        git apply --verbose ${{ inputs.patch_file }}
 
     - name: Enable Developer Command Prompt (Windows)
       if: inputs.os == 'windows-latest'
@@ -143,7 +190,11 @@ jobs:
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.binaryninja-version }}
+        name: >
+          ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}
+          _BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
+          _Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}
+          _${{ runner.os }}-${{ runner.arch }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

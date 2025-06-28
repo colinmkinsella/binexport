@@ -91,7 +91,7 @@ jobs:
         git fetch --tags
         git checkout --force ${{ inputs.version }}
         git submodule update --init --recursive
-        cat ${{ inputs.version }} > VERSION_BINARYNINJA.txt
+        echo "${{ inputs.version }}" > VERSION_BINARYNINJA_LIB.txt
 
     - name: Patch api to allow building headlessly
       if: inputs.patch-file

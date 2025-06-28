@@ -122,7 +122,7 @@ jobs:
     - name: Update Binexport Library Version File
       id: get-binexport-version
       shell: bash
-      working-directory: ${{ github.workspace }}/third-part/binexport/src
+      working-directory: ${{ github.workspace }}/third-party/binexport/src
       run: |
         # Putting in format of major version - date (12-20250619)
         cat CMakeLists.txt | grep "project(binexport VERSION" | \

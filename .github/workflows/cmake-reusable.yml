@@ -186,36 +186,16 @@ jobs:
         cmakeVersion: 4.0.2
         ninjaVersion: 1.12.1
 
-    - name: Cache Abseil
-      id: cache-abseil
-      uses: actions/cache@v4
+    - name: Cache CMake build
+      id: cache-build
+      uses: actions/cache@v3
       with:
-        path: "build/_deps/absl*"
-        key: abseil-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binexport-version.outputs.binexport_version }}
-
-    - name: Cache Protobuf
-      id: cache-protobuf
-      uses: actions/cache@v4
-      with:
-        path: "build/_deps/protobuf*"
-        key: protobuf-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binexport-version.outputs.binexport_version }}
-
-    - name: Cache BinaryNinja Api
-      id: cache-binaryninja
-      uses: actions/cache@v4
-      with:
-        path: "build/binaryninja-api"
-        key: binaryninja-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
-
-    - name: Cache BinExport
-      id: cache-binaryexport
-      uses: actions/cache@v4
-      with:
-        path: "build/binexport"
-        key: binexport-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binexport_version }}
+        path: build  # or your build directory path
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
     - name: Configure CMake
       id: configure-cmake
+      if: steps.cache-build.outputs.cache-hit != 'true'
       shell: bash
       run: |
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
@@ -224,6 +204,14 @@ jobs:
     - name: Build
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }}
+
+    - name: Print Upload Artifacts Path
+      shell: bash
+      run: >-
+        echo ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}
+        _BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
+        _Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}
+        _${{ runner.os }}-${{ runner.arch }}
 
     - name: Upload Build Artifacts
       id: upload-build-artifacts

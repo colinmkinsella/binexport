@@ -200,6 +200,14 @@ jobs:
         path: "build/_deps/protobuf*"
         key: protobuf-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binexport-version.outputs.binexport_version }}
 
+    - name: Cache BinaryNinja Api
+      id: cache-binaryninja
+      uses: actions/cache@v4
+      with:
+        path: "build/binaryninja-api"
+        key: binaryninja-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
+
+
     - name: Configure CMake
       id: configure-cmake
       shell: bash

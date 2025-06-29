@@ -186,6 +186,20 @@ jobs:
         cmakeVersion: 4.0.2
         ninjaVersion: 1.12.1
 
+    - name: Cache Abseil
+      id: cache-abseil
+      uses: actions/cache@v4
+      with:
+        path: "build/_deps/absl*"
+        key: abseil-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binexport-version.outputs.binexport_version }}
+
+    - name: Cache Protobuf
+      id: cache-protobuf
+      uses: actions/cache@v4
+      with:
+        path: "build/_deps/protobuf*"
+        key: protobuf-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binexport-version.outputs.binexport_version }}
+
     - name: Configure CMake
       id: configure-cmake
       shell: bash

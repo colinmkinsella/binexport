@@ -10,12 +10,10 @@ on:
         type: string
       binaryexport_version:
         description: "BinExport Tag or Commit for Specific Version of the Library from Google"
-        default: ""
         required: false
         type: string
       plugin_version:
         description: "Version Number for this Plugin"
-        default: ""
         required: false
         type: string
   schedule:
@@ -95,6 +93,7 @@ jobs:
     with:
       binaryninja_version: ${{ inputs.binaryninja_version }}
       binexport_version: ${{ inputs.binexport_version }}
+      release_title: "BinExport Binary Ninja Plugin"
       release_notes: >
         "This is a build of BinExport plugin for Binary Ninja from the ${{ inputs.binaryninja_version }}
         stable Binary Ninja API."

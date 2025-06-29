@@ -24,15 +24,15 @@ on:
         required: false
         type: string
       release_tag:
-        description: "Tag for the release (uses plugin version if not provided)"
+        description: "Tag for the Release (uses plugin version if not provided)"
         required: false
         type: string
       release_title:
-        description: "Release title (uses plugin version if not provided)"
+        description: "Release Title (appends plugin version)"
         required: false
         type: string
       release_notes:
-        description: "Release notes as a string."
+        description: "Release notes as a string"
         required: true
         type: string
 
@@ -92,21 +92,16 @@ jobs:
       run: |
         # Checking if Release Tag is Empty, if it is empty then it is using Plugin Version
         if [ -z ${{ inputs.release_tag }} ]; then
-          echo "release_tag=${{ needs.build-release.outputs.plugin_version }} " >> $GITHUB_OUTPUT
+          echo "release_tag=v${{ needs.build-release.outputs.plugin_version }} " >> $GITHUB_OUTPUT
         else
           echo "release_tag=${{ inputs.release_tag }} " >> $GITHUB_OUTPUT
         fi
 
-    - name: Release Title Check
+    - name: Get Release Title
       id: get-release-title
       run: |
-        # Checking if Release Title is Empty, if it is empty then it is using Plugin Version
-        if [ -z ${{ inputs.release_title }} ]; then
-          echo "release_title=${{ needs.build-release.outputs.plugin_version }} " >> $GITHUB_OUTPUT
-        else
-          echo "release_title=${{ inputs.release_title }} " >> $GITHUB_OUTPUT
-        fi
-
+        # Appending plugin version number to the Release Title
+        echo "release_title=${{ inputs.release_title }} v${{ needs.build-release.outputs.plugin_version }}" >> $GITHUB_OUTPUT
 
     - name: Check if ${{ inputs.release_tag }} release exists
       id: check-if-release-exists
@@ -123,10 +118,14 @@ jobs:
         fi
 
     - name: Delete ${{ inputs.release_tag }} release
-      if: (${{ steps.check-if-release-exists.outputs.release_exists == 'true' }}) && (${{ inputs.delete_existing_release == true }})
+      if: |
+        (${{ steps.check-if-release-exists.outputs.release_exists == 'true' &&
+        inputs.delete_existing_release == true }})
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        echo ${{ steps.check-if-release-exists.outputs.release_exists }}
+        echo ${{ inputs.delete_existing_release == true }}
         gh release delete ${{ inputs.release_tag }} --cleanup-tag --yes
         echo "waiting for tag to be deleted"
         while git fetch --tags --prune-tags; git tag -l | grep ${{ inputs.release_tag }}; do

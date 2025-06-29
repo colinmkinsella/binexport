@@ -207,6 +207,12 @@ jobs:
         path: "build/binaryninja-api"
         key: binaryninja-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
 
+    - name: Cache BinExport
+      id: cache-binaryexport
+      uses: actions/cache@v4
+      with:
+        path: "build/binexport"
+        key: binexport-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binexport_version }}
 
     - name: Configure CMake
       id: configure-cmake

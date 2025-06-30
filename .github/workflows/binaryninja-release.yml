@@ -137,7 +137,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-
         gh release create ${{ steps.get-release-tag.outputs.release_tag }}
-        --title "${{ inputs.release_title }}"
+        --title "${{ inputs.release_title }} ${{ needs.build-release.outputs.plugin_version }}"
         --notes ${{ inputs.release_notes }}
 
     - name: Create Release Directory

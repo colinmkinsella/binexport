@@ -138,7 +138,9 @@ jobs:
       run: >-
         gh release create ${{ steps.get-release-tag.outputs.release_tag }}
         --title "${{ inputs.release_title }} ${{ needs.build-release.outputs.plugin_version }}"
-        --notes ${{ inputs.release_notes }}
+        --notes "${{ inputs.release_notes }} \
+        * BinaryNinja API Version: ${{ needs.build-release.outputs.binaryninja_version }}
+        * BinExport Version: ${{ needs.build-release.outputs.binexport_version }}
 
     - name: Create Release Directory
       working-directory: ${{ github.workspace }}

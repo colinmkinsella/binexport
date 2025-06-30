@@ -80,8 +80,14 @@ on:
         required: false
         type: string
     outputs:
+      binaryninja_version:
+        description: "The Version of BinaryNinja that was determined from the tag or commit."
+        value: ${{ jobs.build.outputs.binaryninja_version }}
+      binexport_version:
+        description: "The Version of BinExport that was determined from the tag or commit."
+        value: ${{ jobs.build.outputs.binexport_version }}
       plugin_version:
-        description: "The Version of This Plugin in String Format (can change depending on commit)"
+        description: "The Version of This Plugin that was determined from the tag or commit."
         value: ${{ jobs.build.outputs.plugin_version }}
 
 jobs:
@@ -89,6 +95,8 @@ jobs:
     name: Build ${{ inputs.os }}
     runs-on: ${{ inputs.os }}
     outputs:
+      binaryninja_version: ${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
+      binexport_version: ${{ steps.get-binexport-version.outputs.binexport_version }}
       plugin_version: ${{ steps.get-plugin-version.outputs.plugin_version }}
 
     steps:

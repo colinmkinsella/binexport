@@ -132,7 +132,7 @@ jobs:
         done
 
     - name: Create Release From Tag
-      if: ${{ inputs.delete_existing_release == true}}
+      if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == false) }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-

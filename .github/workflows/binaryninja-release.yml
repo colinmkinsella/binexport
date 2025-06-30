@@ -136,7 +136,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-
-        gh release create ${{ steps.get-release-tag.outputs.plugin_version }}
+        gh release create ${{ steps.get-release-tag.outputs.release_tag }}
         --title "${{ inputs.release_title }}"
         --notes ${{ inputs.release_notes }}
 

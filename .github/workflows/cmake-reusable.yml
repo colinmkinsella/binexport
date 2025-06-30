@@ -186,11 +186,11 @@ jobs:
         cmakeVersion: 4.0.2
         ninjaVersion: 1.12.1
 
-    - name: Cache CMake build
-      id: cache-build
-      uses: actions/cache@v3
+    - name: Cache Restore CMake Build
+      id: cache-restore-build
+      uses: actions/cache/restore@v4
       with:
-        path: build  # or your build directory path
+        path: build
         key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
     - name: Configure CMake
@@ -203,6 +203,13 @@ jobs:
     - name: Build
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }}
+
+    - name: Cache Save CMake Build
+      id: cache-save-build
+      uses: actions/cache/save@v4
+      with:
+        path: build
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
     - name: Upload Build Artifacts
       id: upload-build-artifacts

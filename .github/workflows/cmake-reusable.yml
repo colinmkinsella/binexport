@@ -217,11 +217,7 @@ jobs:
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: >-
-          ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}
-          _BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
-          _Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}
-          _${{ runner.os }}-${{ runner.arch }}
+        name: ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}_BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}_Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}_${{ runner.os }}-${{ runner.arch }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

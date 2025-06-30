@@ -195,7 +195,6 @@ jobs:
 
     - name: Configure CMake
       id: configure-cmake
-      if: steps.cache-build.outputs.cache-hit != 'true'
       shell: bash
       run: |
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
@@ -205,19 +204,15 @@ jobs:
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }}
 
-    - name: Print Upload Artifacts Path
-      shell: bash
-      run: >-
-        echo ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}
-        _BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
-        _Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}
-        _${{ runner.os }}-${{ runner.arch }}
-
     - name: Upload Build Artifacts
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}_BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}_Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}_${{ runner.os }}-${{ runner.arch }}
+        name: |
+          ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}\
+          _BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}\
+          _Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}\
+          _${{ runner.os }}-${{ runner.arch }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

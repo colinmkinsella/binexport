@@ -161,7 +161,7 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/${{ github.repository }}/actions/artifacts/$id/zip \
             > $name.zip
-          gh release upload ${{ inputs.release_tag }} \
+          gh release upload ${{ steps.get-release-tag.outputs.release_tag }} \
             ${{ github.workspace }}/release/$name.zip#$name.zip \
             --repo ${{ github.repository }}
         done < <(echo $artifacts_json | jq -r '.artifacts[] | "\(.name) \(.id)"')

@@ -131,15 +131,22 @@ jobs:
           sleep 5;
         done
 
-    - name: Create Release From Tag
+    - name: Create Release Notes
       if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == false) }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: >-
+      run: |
         echo ${{ inputs.release_notes }} > notes.txt
         echo "* BinaryNinja API Version: ${{ needs.build-release.outputs.binaryninja_version }}\n" >> notes.txt
         echo "* BinExport Version: ${{ needs.build-release.outputs.binexport_version }}" >> notes.txt
         cat notes.txt
+        cat notes.txt >> $GITHUB_OUTPUT
+
+    - name: Create Release From Tag
+      if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == false) }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: >
         gh release create ${{ steps.get-release-tag.outputs.release_tag }}
         --title "${{ inputs.release_title }} ${{ needs.build-release.outputs.plugin_version }}"
         --notes-file notes.txt

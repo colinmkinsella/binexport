@@ -136,11 +136,13 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-
+        echo ${{ inputs.release_notes }} > notes.txt
+        echo "* BinaryNinja API Version: ${{ needs.build-release.outputs.binaryninja_version }}\n" >> notes.txt
+        echo "* BinExport Version: ${{ needs.build-release.outputs.binexport_version }}" >> notes.txt
+        cat notes.txt
         gh release create ${{ steps.get-release-tag.outputs.release_tag }}
         --title "${{ inputs.release_title }} ${{ needs.build-release.outputs.plugin_version }}"
-        --notes "${{ inputs.release_notes }}\n
-        * BinaryNinja API Version: ${{ needs.build-release.outputs.binaryninja_version }} \n
-        * BinExport Version: ${{ needs.build-release.outputs.binexport_version }}"
+        --notes-file notes.txt
 
     - name: Create Release Directory
       working-directory: ${{ github.workspace }}

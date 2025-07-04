@@ -237,11 +237,23 @@ jobs:
         path: build
         key: ${{ steps.get-cache-key.outputs.cache_key }}
 
+    - name: Get Artifact Name
+      id: get-artifact-name
+      shell: bash
+      run: |
+        artifact_name="${{ inputs.base_artifact_filename }}"
+        artifact_name+="${{ steps.get-binexport-version.outputs.binexport_version }}"
+        artifact_name+="_BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}"
+        artifact_name+="_Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}"
+        artifact_name+="_${{ runner.os }}-${{ runner.arch }}"
+        echo "artifact_name=$artifact_name"
+        echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
+
     - name: Upload Build Artifacts
       id: upload-build-artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.base_artifact_filename }}${{ steps.get-binexport-version.outputs.binexport_version }}_BinaryNinja-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}_Plugin-${{ steps.get-plugin-version.outputs.plugin_version }}_${{ runner.os }}-${{ runner.arch }}
+        name: ${{ steps.get-artifact-name.outputs.artifact_name }}
         path: |
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dll
           ${{ github.workspace }}/${{ env.BUILD_DIR }}/*.dylib

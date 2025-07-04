@@ -172,5 +172,6 @@ jobs:
             > $name.zip
           gh release upload ${{ steps.get-release-tag.outputs.release_tag }} \
             ${{ github.workspace }}/release/$name.zip#$name.zip \
-            --repo ${{ github.repository }}
+            --repo ${{ github.repository }} \
+            --clobber
         done < <(echo $artifacts_json | jq -r '.artifacts[] | "\(.name) \(.id)"')

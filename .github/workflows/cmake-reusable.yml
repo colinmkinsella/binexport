@@ -160,14 +160,16 @@ jobs:
 
         # Attempt to get the tag name
         TAG=$(git describe --exact-match --tags 2>/dev/null)
+        TAG="${TAG//$'\\n'/}"
 
         # Check if a tag was found
         if [ -n "$TAG" ]; then
-          echo "$TAG" | tr -d '\n' > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
+          echo "$TAG" > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
         else
           # If no tag, get the current branch name
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          echo "$BRANCH" | tr -d '\n' > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
+          BRANCH="${BRANCH//$'\\n'/}"
+          echo "$BRANCH" > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
         fi
 
         cat ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'

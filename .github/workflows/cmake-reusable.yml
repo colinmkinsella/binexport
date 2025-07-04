@@ -10,22 +10,18 @@ on:
         description: >
           "The base filename of the artifact .zip that is created OS and
           architecture are appended"
-        required: False
         default: "BinExport"
         type: string
       binaryninja_version:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
-        required: False
         default: "dev"
         type: string
       binexport_version:
         description: "BinExport Tag or Commit for Specific Version of the Library from Google"
-        required: False
         default: "main"
         type: string
       build_type:
         description: "Debug or Release builds"
-        required: false
         default: "Release"
         type: string
       os:
@@ -34,12 +30,9 @@ on:
         type: string
       patch_file:
         description: "Workflow Patch File for Older Versions of Binary Ninja"
-        required: False
-        default: ""
         type: string
       plugin_version:
         description: "Version Number for this Plugin"
-        required: false
         type: string
 
   workflow_call:

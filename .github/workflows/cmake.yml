@@ -36,4 +36,3 @@ jobs:
       binaryninja_version: ${{ matrix.version.name }}
       os: ${{ matrix.os }}
       patch_file: ${{ matrix.version.patch_file }}
-

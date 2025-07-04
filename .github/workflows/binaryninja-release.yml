@@ -8,32 +8,25 @@ on:
     inputs:
       binaryninja_version:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
-        required: true
         type: string
       binexport_version:
         description: "BinExport Tag or Commit for Specific Version of the Library from Google"
-        required: false
         type: string
       delete_existing_release:
         description: "Delete the Existing Release and Recreate"
         default: false
-        required: false
         type: boolean
       plugin_version:
         description: "Version Number Tag or Commit for this Plugin (uses latest if not provided)"
-        required: false
         type: string
       release_tag:
         description: "Tag for the Release (uses plugin version if not provided)"
-        required: false
         type: string
       release_title:
         description: "Release Title (appends plugin version)"
-        required: false
         type: string
       release_notes:
         description: "Release notes as a string"
-        required: true
         type: string
 
 jobs:

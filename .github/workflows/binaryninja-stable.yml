@@ -6,15 +6,12 @@ on:
     inputs:
       binaryninja_version:
         description: "Binary Ninja API Tag or Commit for Specific Version of the API"
-        required: true
         type: string
-      binaryexport_version:
+      binexport_version:
         description: "BinExport Tag or Commit for Specific Version of the Library from Google"
-        required: false
         type: string
       plugin_version:
         description: "Version Number for this Plugin"
-        required: false
         type: string
   schedule:
     - cron: '0 1 * * *' # Daily
@@ -51,7 +48,7 @@ jobs:
         latest_tag=$(gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          /repos/Vector35/binaryninja-api/git/tags/${{ steps.get-latest-tag-hash.outputs.latest_tag_hash }})
+          /repos/${{ github.event.repository.name }}/git/tags/${{ steps.get-latest-tag-hash.outputs.latest_tag_hash }})
         commit_date=$(echo $latest_tag | jq -r .tagger.date)
         echo "latest_tag_commit_date=$commit_date"
         echo "latest_tag_commit_date=$commit_date" >> $GITHUB_OUTPUT
@@ -81,6 +78,7 @@ jobs:
     with:
       binaryninja_version: ${{ needs.check-for-release.outputs.latest_tag_name }}
       binexport_version: ${{ inputs.binexport_version }}
+      plugin_version: ${{ inputs.plugin_version }}
       release_tag: ${{ needs.check-for-release.outputs.latest_tag_name }}
       release_title: "BinExport Binary Ninja Plugin Latest Stable Build (${{ needs.check-for-release.outputs.latest_tag_name }})"
       release_notes: >
@@ -93,6 +91,7 @@ jobs:
     with:
       binaryninja_version: ${{ inputs.binaryninja_version }}
       binexport_version: ${{ inputs.binexport_version }}
+      plugin_version: ${{ inputs.plugin_version }}
       release_title: "BinExport Binary Ninja Plugin"
       release_notes: >
         "This is a build of the BinExport plugin for Binary Ninja from the following versions:"

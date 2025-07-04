@@ -2,8 +2,9 @@
 include(FetchContent)
 
 FetchContent_Declare(protobuf
-  GIT_REPOSITORY         https://github.com/protocolbuffers/protobuf.git
-  GIT_TAG                main
+  GIT_REPOSITORY     https://github.com/protocolbuffers/protobuf.git
+  GIT_TAG            main
+  OVERRIDE_FIND_PACKAGE
 )
 
 set(protobuf_ABSL_PROVIDER "package" CACHE STRING "" FORCE)

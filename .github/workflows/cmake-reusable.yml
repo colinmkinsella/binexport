@@ -137,7 +137,7 @@ jobs:
         cat VERSION_PLUGIN.txt | awk '{print "BinExport Plugin Version: "$1}'
         cat VERSION_PLUGIN.txt | awk '{print "plugin_version="$1}' >> $GITHUB_OUTPUT
 
-    - name: Update Binexport Library Version File
+    - name: Update BinExport Library Version File
       id: get-binexport-version
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binexport/src
@@ -217,7 +217,7 @@ jobs:
       uses: actions/cache/save@v4
       with:
         path: build
-        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('**/*.cc') }}
 
     - name: Upload Build Artifacts
       id: upload-build-artifacts

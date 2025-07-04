@@ -137,7 +137,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo ${{ inputs.release_notes }} > notes.txt
-        echo "* BinaryNinja API Version: ${{ needs.build-release.outputs.binaryninja_version }}\n" >> notes.txt
+        echo "* BinaryNinja API Version: ${{ needs.build-release.outputs.binaryninja_version }}" >> notes.txt
         echo "* BinExport Version: ${{ needs.build-release.outputs.binexport_version }}" >> notes.txt
         cat notes.txt
 

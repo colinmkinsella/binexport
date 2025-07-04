@@ -144,10 +144,10 @@ jobs:
       run: |
         # Putting in format of major version - date (12-20250619)
         cat CMakeLists.txt | grep "project(binexport VERSION" | \
-          awk -F " " '{print $3}' | awk -F ")" '{print $1}' | tr -d '\n' > ../../../VERSION_BINEXPORT_LIB.txt
-        git log -1 --pretty=format:%ad --date=format:"-%Y%m%d" >> ../../../VERSION_BINEXPORT_LIB.txt
-        cat ../../../VERSION_BINEXPORT_LIB.txt | awk '{print "BinExport Lib Version: "$1}'
-        cat ../../../VERSION_BINEXPORT_LIB.txt | awk '{print "binexport_version="$1}' >> $GITHUB_OUTPUT
+          awk -F " " '{print $3}' | awk -F ")" '{print $1}' | tr -d '\n' > ${{ github.workspace }}/VERSION_BINEXPORT_LIB.txt
+        git log -1 --pretty=format:%ad --date=format:"-%Y%m%d" >> ${{ github.workspace }}/VERSION_BINEXPORT_LIB.txt
+        cat ${{ github.workspace }}/VERSION_BINEXPORT_LIB.txt | awk '{print "BinExport Lib Version: "$1}'
+        cat ${{ github.workspace }}/VERSION_BINEXPORT_LIB.txt | awk '{print "binexport_version="$1}' >> $GITHUB_OUTPUT
 
     - name: Get Specific Binary Ninja API Version
       id: get-binaryninja-version
@@ -163,15 +163,15 @@ jobs:
 
         # Check if a tag was found
         if [ -n "$TAG" ]; then
-          echo "$TAG" > VERSION_BINARYNINJA_LIB.txt
+          echo "$TAG" > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
         else
           # If no tag, get the current branch name
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
           echo "$BRANCH" > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
         fi
 
-        cat VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
-        cat VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
+        cat ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
+        cat ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
 
     - name: Patch api to allow building headlessly
       if: inputs.patch_file

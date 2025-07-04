@@ -160,20 +160,18 @@ jobs:
 
         # Attempt to get the tag name
         TAG=$(git describe --exact-match --tags 2>/dev/null)
-        TAG="${TAG//$'\\n'/}"
 
         # Check if a tag was found
         if [ -n "$TAG" ]; then
-          echo "$TAG" > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
+          echo "$TAG" > ../../VERSION_BINARYNINJA_LIB.txt
         else
           # If no tag, get the current branch name
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          BRANCH="${BRANCH//$'\\n'/}"
-          echo "$BRANCH" > ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt
+          echo "$BRANCH" > ../../VERSION_BINARYNINJA_LIB.txt
         fi
 
-        cat ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
-        cat ${{ github.workspace }}/VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
+        cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
+        cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
 
     - name: Patch api to allow building headlessly
       if: inputs.patch_file

@@ -180,13 +180,14 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        absl_timestamp=$(gh api repos/abseil/abseil-cpp/commits/master --jq .commit.author.date | sha1sum | head -c 40)
-        protobuf_timestamp=$(gh api repos/protocolbuffers/protobuf/commits/main --jq .commit.author.date | sha1sum | head -c 40)
+        absl_timestamp=$(gh api repos/abseil/abseil-cpp/commits/master --jq .commit.author.date)
+        protobuf_timestamp=$(gh api repos/protocolbuffers/protobuf/commits/main --jq .commit.author.date)
         cache_key="${{ runner.os }}-${{ runner.arch }}-"
         cache_key+="${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-"
         cache_key+="${{ steps.get-binexport-version.outputs.binexport_version }}-"
         cache_key+="$absl_timestamp"
         cache_key+="$protobuf_timestamp"
+        echo "cache_key=$cache_key"
         echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
 
     - name: Patch api to allow building headlessly

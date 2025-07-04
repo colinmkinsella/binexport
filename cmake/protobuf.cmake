@@ -4,7 +4,7 @@ include(FetchContent)
 FetchContent_Declare(protobuf
   GIT_REPOSITORY     https://github.com/protocolbuffers/protobuf.git
   GIT_TAG            main
-  OVERRIDE_FIND_PACKAGE
+  FIND_PACKAGE_ARGS
 )
 
 set(protobuf_ABSL_PROVIDER "package" CACHE STRING "" FORCE)

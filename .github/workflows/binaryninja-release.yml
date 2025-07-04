@@ -140,7 +140,6 @@ jobs:
         echo "* BinaryNinja API Version: ${{ needs.build-release.outputs.binaryninja_version }}\n" >> notes.txt
         echo "* BinExport Version: ${{ needs.build-release.outputs.binexport_version }}" >> notes.txt
         cat notes.txt
-        cat notes.txt >> $GITHUB_OUTPUT
 
     - name: Create Release From Tag
       if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == false) }}

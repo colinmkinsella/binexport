@@ -27,6 +27,8 @@ jobs:
       latest_tag_name: ${{ steps.get-latest-tag-info.outputs.latest_tag_name }}
 
     steps:
+    - uses: actions/checkout@v4
+
     - name: Get Latest Tag Hash from Binary Ninja API
       id: get-latest-tag-hash
       env:

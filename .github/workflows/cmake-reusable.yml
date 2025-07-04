@@ -185,7 +185,8 @@ jobs:
         cache_key="${{ runner.os }}-${{ runner.arch }}_"
         cache_key+="${{ steps.get-binaryninja-version.outputs.binaryninja_version }}_"
         cache_key+="${{ steps.get-binexport-version.outputs.binexport_version }}_"
-        cache_key+="$absl_timestamp_"
+        cache_key+="$absl_timestamp"
+        cache_key+="_"
         cache_key+="$protobuf_timestamp"
         echo "cache_key=$cache_key"
         echo "cache_key=$cache_key" >> $GITHUB_OUTPUT

@@ -4,7 +4,6 @@ include(FetchContent)
 FetchContent_Declare(absl
   GIT_REPOSITORY     https://github.com/abseil/abseil-cpp.git
   GIT_TAG            master
-  FIND_PACKAGE_ARGS
 )
 
 set(ABSL_CXX_STANDARD ${CMAKE_CXX_STANDARD} CACHE STRING "" FORCE)

@@ -4,7 +4,6 @@ include(FetchContent)
 FetchContent_Declare(protobuf
   GIT_REPOSITORY     https://github.com/protocolbuffers/protobuf.git
   GIT_TAG            main
-  FIND_PACKAGE_ARGS
 )
 
 set(protobuf_ABSL_PROVIDER "package" CACHE STRING "" FORCE)
@@ -28,9 +27,6 @@ target_include_directories(libprotobuf PUBLIC
 )
 set(Protobuf_INCLUDE_DIR "${protobuf_SOURCE_DIR}/src" CACHE INTERNAL "")
 set(Protobuf_LIBRARIES protobuf::libprotobuf CACHE INTERNAL "")
-set(protobuf_PROTOC_EXECUTABLE OFF CACHE BOOL "" FORCE)
-set(protobuf_generate OFF CACHE BOOL "" FORCE)
-set(protobuf  OFF CACHE BOOL "" FORCE)
 find_package(Protobuf REQUIRED) # Make protobuf_generate_cpp available
 
 include_directories(${protobuf_SOURCE_DIR}/src)

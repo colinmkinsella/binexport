@@ -173,6 +173,20 @@ jobs:
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
 
+    - name: Get Cache Key
+      id: get-cache-key
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        absl_timestamp=$(gh api repos/abseil/abseil-cpp/commits/master --jq .commit.author.date | sha1sum | head -c 40)
+        protobuf_timestamp=$(gh api repos/protocolbuffers/protobuf/commits/main --jq .commit.author.date | sha1sum | head -c 40)
+        cache_key="${{ runner.os }}-${{ runner.arch }}-"
+        cache_key+="${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-"
+        cache_key+="${{ steps.get-binexport-version.outputs.binexport_version }}-"
+        cache_key+="$absl_timestamp"
+        cache_key+="$protobuf_timestamp"
+        echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
+
     - name: Patch api to allow building headlessly
       if: inputs.patch_file
       shell: bash
@@ -199,7 +213,7 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: build
-        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('./build/_deps/absl-src/**', './build/_deps/protobuf-src/**') }}
+        key: ${{ steps.get-cache-key.outputs.cache_key }}
 
     - name: Configure CMake
       id: configure-cmake
@@ -217,7 +231,7 @@ jobs:
       uses: actions/cache/save@v4
       with:
         path: build
-        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('./build/_deps/absl-src/**', './build/_deps/protobuf-src/**') }}
+        key: ${{ steps.get-cache-key.outputs.cache_key }}
 
     - name: Upload Build Artifacts
       id: upload-build-artifacts

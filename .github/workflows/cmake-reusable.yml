@@ -199,7 +199,7 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: build
-        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ steps.get-binaryninja-version.outputs.binaryninja_version }}-${{ steps.get-binexport-version.outputs.binexport_version }}-cmake-${{ hashFiles('**/*.cc') }}
 
     - name: Configure CMake
       id: configure-cmake

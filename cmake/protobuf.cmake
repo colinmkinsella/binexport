@@ -28,6 +28,6 @@ target_include_directories(libprotobuf PUBLIC
 )
 set(Protobuf_INCLUDE_DIR "${protobuf_SOURCE_DIR}/src" CACHE INTERNAL "")
 set(Protobuf_LIBRARIES protobuf::libprotobuf CACHE INTERNAL "")
-find_package(Protobuf REQUIRED) # Make protobuf_generate_cpp available
+find_package(Protobuf REQUIRED CONFIG) # Make protobuf_generate_cpp available
 
 include_directories(${protobuf_SOURCE_DIR}/src)

@@ -105,7 +105,6 @@ jobs:
 
     - name: Check if ${{ inputs.release_tag }} release exists
       id: check-if-release-exists
-      if: ${{ inputs.delete_existing_release == true }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |

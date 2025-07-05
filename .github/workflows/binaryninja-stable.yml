@@ -49,7 +49,7 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           /repos/Vector35/binaryninja-api/git/commits/${{ steps.get-latest-binaryninja-tag-hash.outputs.latest_binaryninja_tag_hash }})
-        commit_date=$(echo $latest_tag | jq -r .tagger.date)
+        commit_date=$(echo $latest_tag | jq -r .committer.date)
         echo "latest_tag_commit_date=$commit_date"
         echo "latest_tag_commit_date=$commit_date" >> $GITHUB_OUTPUT
         tag_name=$(echo $latest_tag | jq -r .tag)

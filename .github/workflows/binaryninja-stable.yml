@@ -28,6 +28,7 @@ jobs:
 
     steps:
     - name: Get Latest Tag Info from Binary Ninja API
+      if: github.event_name == 'schedule'
       id: get-latest-binaryninja-tag-info
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,6 +74,7 @@ jobs:
 
 
     - name: Is Tag Within 24 Hours?
+      if: github.event_name == 'schedule'
       id: is-tag-within-24-hours
       run: |
         date_timestamp=$(date -d ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_tag_commit_date }} +"%s")
@@ -90,7 +92,7 @@ jobs:
   binaryninja-stable-release-last-24:
     uses: ./.github/workflows/binaryninja-release.yml
     needs: check-for-release
-    if: needs.check-for-release.outputs.build_within_24_hours == 'true'
+    if: (needs.check-for-release.outputs.build_within_24_hours == 'true') && (github.event_name == 'schedule')
     with:
       binaryninja_version: ${{ needs.check-for-release.outputs.latest_binaryninja_tag_name }}
       binexport_version: ${{ inputs.binexport_version }}
@@ -102,7 +104,7 @@ jobs:
 
   binaryninja-stable-release:
     uses: ./.github/workflows/binaryninja-release.yml
-    if: inputs.binaryninja_version != ''
+    if: github.event_name != 'schedule'
     with:
       binaryninja_version: ${{ inputs.binaryninja_version }}
       binexport_version: ${{ inputs.binexport_version }}

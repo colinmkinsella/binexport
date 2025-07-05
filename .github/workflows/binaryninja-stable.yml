@@ -21,14 +21,12 @@ jobs:
     if: inputs.binaryninja_version == ''
     runs-on: ubuntu-latest
     outputs:
-      build_within_24_hours: ${{ steps.is-tag-within-24-hours.outputs.build_within_24_hours }}
-      latest_binaryninja_commit_date: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_plugin_commit_date}}
-      latest_binaryninja_tag_hash: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_binaryninja_tag_hash }}
-      latest_binaryninja_tag_name: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_plugin_tag_name }}
+      release_within_24_hours: ${{ steps.is-tag-within-24-hours.outputs.release_within_24_hours }}
+      binaryninja_version: ${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
 
     steps:
     - name: Get Latest Tag Info from Binary Ninja API
-      if: github.event_name == 'schedule'
+      if: inputs.binaryninja_version == ''
       id: get-latest-binaryninja-tag-info
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,8 +47,8 @@ jobs:
         # difference between lightweight tag and annotated tag
         # doesn't provide a good way of getting the tag name through the API
         tag_name="${tag_ref##*/}"
-        echo "latest_tag_name=$tag_name"
-        echo "latest_tag_name=$tag_name" >> $GITHUB_OUTPUT
+        echo "latest_binaryninja_tag_name=$tag_name"
+        echo "latest_binaryninja_tag_name=$tag_name" >> $GITHUB_OUTPUT
 
         # git/tags api only works for annotated tag objects
         # lightweight tags have to be referenced by commit
@@ -72,6 +70,18 @@ jobs:
         echo "latest_tag_commit_date=$commit_date"
         echo "latest_tag_commit_date=$commit_date" >> $GITHUB_OUTPUT
 
+    - name: Get Binary Ninja API Version
+      id: get-binaryninja-version
+      run: |
+        # checking if the binary ninja api version is blank
+        # if it is, use the latest version
+        if [[ -z "${{ inputs.binaryninja_version }}" ]]
+          echo "binaryninja_version=${{ steps.get-latest-binaryninja-tag-info.outputs.latest_binaryninja_tag_name }}"
+          echo "binaryninja_version=${{ steps.get-latest-binaryninja-tag-info.outputs.latest_binaryninja_tag_name }}" >> $GITHUB_OUTPUT
+        else
+          echo "binaryninja_version=${{ inputs.binaryninja_version }}"
+          echo "binaryninja_version=${{ inputs.binaryninja_version }}" >> $GITHUB_OUTPUT
+        fi
 
     - name: Is Tag Within 24 Hours?
       if: github.event_name == 'schedule'
@@ -82,31 +92,31 @@ jobs:
         twenty_four_hours_ago=$((current_timestamp - 24 * 60 * 60))
 
         if [[ $date_timestamp -gt $twenty_four_hours_ago ]]; then
-          echo "build_within_24_hours=true"
-          echo "build_within_24_hours=true" >> $GITHUB_OUTPUT
+          echo "release_within_24_hours=true"
+          echo "release_within_24_hours=true" >> $GITHUB_OUTPUT
         else
-          echo "build_within_24_hours=false"
-          echo "build_within_24_hours=false" >> $GITHUB_OUTPUT
+          echo "release_within_24_hours=false"
+          echo "release_within_24_hours=false" >> $GITHUB_OUTPUT
         fi
 
   binaryninja-stable-release-last-24:
     uses: ./.github/workflows/binaryninja-release.yml
     needs: check-for-release
-    if: (needs.check-for-release.outputs.build_within_24_hours == 'true') && (github.event_name == 'schedule')
+    if: (needs.check-for-release.outputs.release_within_24_hours == 'true') && (github.event_name == 'schedule')
     with:
-      binaryninja_version: ${{ needs.check-for-release.outputs.latest_binaryninja_tag_name }}
+      binaryninja_version: ${{ needs.check-for-release.outputs.binaryninja_version }}
       binexport_version: ${{ inputs.binexport_version }}
       plugin_version: ${{ inputs.plugin_version }}
-      release_tag: ${{ needs.check-for-release.outputs.latest_binaryninja_tag_name }}
       release_title: "BinExport Binary Ninja Plugin"
       release_notes: >
         "This is a build of the BinExport plugin for Binary Ninja from the following versions:"
 
   binaryninja-stable-release:
     uses: ./.github/workflows/binaryninja-release.yml
+    needs: check-for-release
     if: github.event_name != 'schedule'
     with:
-      binaryninja_version: ${{ inputs.binaryninja_version }}
+      binaryninja_version: ${{ needs.check-for-release.outputs.binaryninja_version }}
       binexport_version: ${{ inputs.binexport_version }}
       plugin_version: ${{ inputs.plugin_version }}
       release_title: "BinExport Binary Ninja Plugin"

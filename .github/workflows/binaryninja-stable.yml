@@ -11,7 +11,7 @@ on:
         description: "BinExport Tag or Commit for Specific Version of the Library from Google"
         type: string
       plugin_version:
-        description: "Version Number for this Plugin"
+        description: "Plugin Tag or Commit for Specific Version Number of this Plugin"
         type: string
   schedule:
     - cron: '0 1 * * *' # Daily
@@ -23,7 +23,7 @@ jobs:
     outputs:
       build_within_24_hours: ${{ steps.is-tag-within-24-hours.outputs.build_within_24_hours }}
       latest_binaryninja_commit_date: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_plugin_commit_date}}
-      latest_binaryninja_tag_hash: ${{ steps.get-latest-binaryninja-tag-hash.outputs.latest_binaryninja_tag_hash }}
+      latest_binaryninja_tag_hash: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_binaryninja_tag_hash }}
       latest_binaryninja_tag_name: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_plugin_tag_name }}
 
     steps:

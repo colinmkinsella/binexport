@@ -17,7 +17,7 @@ on:
         default: false
         type: boolean
       plugin_version:
-        description: "Version Number Tag or Commit for this Plugin (uses latest if not provided)"
+        description: "Plugin Tag or Commit for Specific Version Number of this Plugin"
         type: string
       release_tag:
         description: "Tag for the Release (uses plugin version if not provided)"

@@ -105,18 +105,6 @@ jobs:
         git checkout --force ${{ inputs.plugin_version }}
         git submodule update --init --recursive
 
-        # Attempt to get the tag name
-        TAG=$(git describe --exact-match --tags 2>/dev/null)
-
-        # Check if a tag was found
-        if [ -n "$TAG" ]; then
-          echo "$TAG" > VERSION_PLUGIN.txt
-        else
-          # If no tag, get the current branch name
-          BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          echo "$BRANCH" > ${{ github.workspace }}/VERSION_PLUGIN.txt
-        fi
-
     - name: Update submodules
       shell: bash
       working-directory: ${{ github.workspace }}

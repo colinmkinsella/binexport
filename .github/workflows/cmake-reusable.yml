@@ -136,14 +136,17 @@ jobs:
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
         git fetch --tags
+        git pull
         git checkout --force ${{ inputs.binaryninja_version }}
         git submodule update --init --recursive
 
         # Attempt to get the tag name
+        set +e
         TAG=$(git describe --exact-match --tags 2>/dev/null)
+        set -e
 
         # Check if a tag was found
-        if [ -n "$TAG" ]; then
+        if [[ -n "$TAG" ]]; then
           echo "$TAG" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
         else
           # If no tag, get the current branch name

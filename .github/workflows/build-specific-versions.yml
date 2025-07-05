@@ -1,5 +1,5 @@
-name: binaryninja-stable
-run-name: binaryninja-stable ${{ inputs.binaryninja_version }}
+name: build-specific-versions
+run-name: build-specific-versions ${{ inputs.plugin_version }} ${{ inputs.binaryninja_version }} ${{ inputs.binexport_version }}
 
 on:
   workflow_dispatch:
@@ -100,7 +100,7 @@ jobs:
         fi
 
   binaryninja-stable-release-last-24:
-    uses: ./.github/workflows/binaryninja-release.yml
+    uses: ./.github/workflows/build-release.yml
     needs: check-for-release
     if: (needs.check-for-release.outputs.release_within_24_hours == 'true') && (github.event_name == 'schedule')
     with:
@@ -109,7 +109,7 @@ jobs:
       plugin_version: ${{ inputs.plugin_version }}
 
   binaryninja-stable-release:
-    uses: ./.github/workflows/binaryninja-release.yml
+    uses: ./.github/workflows/build-release.yml
     needs: check-for-release
     if: github.event_name != 'schedule'
     with:

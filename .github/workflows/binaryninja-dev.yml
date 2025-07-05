@@ -8,9 +8,6 @@ on:
 
 jobs:
   binaryninja-nightly-dev-release:
-    uses: ./.github/workflows/binaryninja-release.yml
+    uses: ./.github/workflows/build-release.yml
     with:
       binaryninja_version: "dev"
-      release_title: "BinExport Binary Ninja Plugin"
-      release_notes: >
-        "This is a build of the BinExport plugin for Binary Ninja from the following versions:"

@@ -23,6 +23,6 @@ jobs:
         - name: "v4.0.4958-stable"
         - name: "v4.0.4911-stable"
         - name: "v3.5.4526-stable"
-    uses: ./.github/workflows/binaryninja-release.yml
+    uses: ./.github/workflows/build-release.yml
     with:
       binaryninja_version: ${{ matrix.version.name }}

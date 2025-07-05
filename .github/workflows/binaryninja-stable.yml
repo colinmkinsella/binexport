@@ -13,7 +13,6 @@ on:
       plugin_version:
         description: "Version Number for this Plugin"
         type: string
-        default: "v1.0.0"
   schedule:
     - cron: '0 1 * * *' # Daily
 
@@ -46,6 +45,10 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        latest_tag=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          /repos/${{ github.repository }}/git/refs/tags/${{ inputs.plugin_version }})
         latest_tag=$(gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \

@@ -1,5 +1,5 @@
 name: build-specific-versions
-run-name: build-specific-versions ${{ inputs.plugin_version }} ${{ inputs.binaryninja_version }} ${{ inputs.binexport_version }}
+run-name: build-specific-versions ${{ inputs.binexport_version }}-${{ inputs.binaryninja_version }}-${{ inputs.plugin_version }}
 
 on:
   workflow_dispatch:

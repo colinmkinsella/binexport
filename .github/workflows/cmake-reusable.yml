@@ -136,7 +136,6 @@ jobs:
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
         git fetch --tags
-        git pull
         git checkout --force ${{ inputs.binaryninja_version }}
         git submodule update --init --recursive
 

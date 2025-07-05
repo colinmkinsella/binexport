@@ -124,7 +124,7 @@ jobs:
         done
 
     - name: Create Release Notes
-      if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == false) }}
+      if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == 'false') }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -134,7 +134,7 @@ jobs:
         cat notes.txt
 
     - name: Create Release From Tag
-      if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == false) }}
+      if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == 'false') }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >

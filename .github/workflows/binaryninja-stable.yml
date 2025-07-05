@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build_within_24_hours: ${{ steps.is-build-within-24-hours.outputs.build_within_24_hours }}
-      latest_plugin_commit_date: ${{ steps.get-latest-plugin-tag-info.outputs.latest_plugin_commit_date}}
+      latest_binaryninja_commit_date: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_plugin_commit_date}}
       latest_binaryninja_tag_hash: ${{ steps.get-latest-binaryninja-tag-hash.outputs.latest_binaryninja_tag_hash }}
-      latest_plugin_tag_name: ${{ steps.get-latest-plugin-tag-info.outputs.latest_plugin_tag_name }}
+      latest_binaryninja_tag_name: ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_plugin_tag_name }}
 
     steps:
     - name: Get Latest Tag Hash from Binary Ninja API
@@ -40,30 +40,26 @@ jobs:
         echo "latest_binaryninja_tag_hash=$tag_hash"
         echo "latest_binaryninja_tag_hash=$tag_hash" >> $GITHUB_OUTPUT
 
-    - name: Get Latest Plugin Tag Info
-      id: get-latest-plugin-tag-info
+    - name: Get Tag Info from Binary Ninja API
+      id: get-latest-binaryninja-tag-info
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         latest_tag=$(gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          /repos/${{ github.repository }}/git/refs/tags/${{ inputs.plugin_version }})
-        latest_tag=$(gh api \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          /repos/${{ github.repository }}/git/refs/tags/${{ inputs.plugin_version }})
+          /repos/Vector35/binaryninja-api/git/commits/${{ steps.get-latest-binaryninja-tag-hash.outputs.latest_binaryninja_tag_hash }})
         commit_date=$(echo $latest_tag | jq -r .tagger.date)
-        echo "latest_plugin_commit_date=$commit_date"
-        echo "latest_plugin_commit_date=$commit_date" >> $GITHUB_OUTPUT
+        echo "latest_tag_commit_date=$commit_date"
+        echo "latest_tag_commit_date=$commit_date" >> $GITHUB_OUTPUT
         tag_name=$(echo $latest_tag | jq -r .tag)
-        echo "latest_plugin_tag_name=$tag_name"
-        echo "latest_plugin_tag_name=$tag_name" >> $GITHUB_OUTPUT
+        echo "latest_tag_name=$tag_name"
+        echo "latest_tag_name=$tag_name" >> $GITHUB_OUTPUT
 
     - name: Is Build Within 24 Hours?
       id: is-build-within-24-hours
       run: |
-        date_timestamp=$(date -d ${{ steps.get-latest-plugin-tag-info.outputs.latest_plugin_commit_date }} +"%s")
+        date_timestamp=$(date -d ${{ steps.get-latest-binaryninja-tag-info.outputs.latest_plugin_commit_date }} +"%s")
         current_timestamp=$(date +"%s")
         twenty_four_hours_ago=$((current_timestamp - 24 * 60 * 60))
 
@@ -80,14 +76,13 @@ jobs:
     needs: check-for-release
     if: needs.check-for-release.outputs.build_within_24_hours == 'true'
     with:
-      binaryninja_version: ${{ needs.check-for-release.outputs.latest_plugin_tag_name }}
+      binaryninja_version: ${{ needs.check-for-release.outputs.latest_binaryninja_tag_name }}
       binexport_version: ${{ inputs.binexport_version }}
       plugin_version: ${{ inputs.plugin_version }}
-      release_tag: ${{ needs.check-for-release.outputs.latest_plugin_tag_name }}
-      release_title: "BinExport Binary Ninja Plugin Latest Stable Build (${{ needs.check-for-release.outputs.latest_plugin_tag_name }})"
+      release_tag: ${{ needs.check-for-release.outputs.latest_binaryninja_tag_name }}
+      release_title: "BinExport Binary Ninja Plugin"
       release_notes: >
-        "This is a build of BinExport plugin for Binary Ninja from the latest
-        stable Binary Ninja API ${{ needs.check-for-release.outputs.latest_plugin_tag_name }}."
+        "This is a build of the BinExport plugin for Binary Ninja from the following versions:"
 
   binaryninja-stable-release:
     uses: ./.github/workflows/binaryninja-release.yml

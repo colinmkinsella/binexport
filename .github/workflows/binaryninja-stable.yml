@@ -107,9 +107,6 @@ jobs:
       binaryninja_version: ${{ needs.check-for-release.outputs.binaryninja_version }}
       binexport_version: ${{ inputs.binexport_version }}
       plugin_version: ${{ inputs.plugin_version }}
-      release_title: "BinExport Binary Ninja Plugin"
-      release_notes: >
-        "This is a build of the BinExport plugin for Binary Ninja from the following versions:"
 
   binaryninja-stable-release:
     uses: ./.github/workflows/binaryninja-release.yml
@@ -119,6 +116,3 @@ jobs:
       binaryninja_version: ${{ needs.check-for-release.outputs.binaryninja_version }}
       binexport_version: ${{ inputs.binexport_version }}
       plugin_version: ${{ inputs.plugin_version }}
-      release_title: "BinExport Binary Ninja Plugin"
-      release_notes: >
-        "This is a build of the BinExport plugin for Binary Ninja from the following versions:"

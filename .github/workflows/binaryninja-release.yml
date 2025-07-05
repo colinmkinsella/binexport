@@ -24,9 +24,11 @@ on:
         type: string
       release_title:
         description: "Release Title (appends plugin version)"
+        default: "BinExport Binary Ninja Plugin"
         type: string
       release_notes:
         description: "Release notes as a string"
+        default: "This is a build of the BinExport plugin for Binary Ninja from the following versions:"
         type: string
 
 jobs:

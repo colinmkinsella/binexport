@@ -1,0 +1,28 @@
+name: batch-build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  cmake-reusable:
+    strategy:
+      fail-fast: false
+      matrix:
+        version: # BinaryNinja API Versions
+        - name: "dev"
+        - name: "v5.0.7648-stable"
+        - name: "v5.0.7486-stable"
+        - name: "v5.0.7290-stable"
+        - name: "v4.2.6455-stable"
+        - name: "v4.1.5902-stable"
+        - name: "v4.1.5747-stable"
+        - name: "v4.0.5336-stable"
+        - name: "v4.0.4958-stable"
+        - name: "v4.0.4911-stable"
+        - name: "v3.5.4526-stable"
+    uses: ./.github/workflows/binaryninja-release.yml
+    with:
+      binaryninja_version: ${{ matrix.version.name }}

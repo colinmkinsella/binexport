@@ -75,7 +75,7 @@ jobs:
       run: |
         # checking if the binary ninja api version is blank
         # if it is, use the latest version
-        if [[ -z "${{ inputs.binaryninja_version }}" ]]
+        if [[ -z "${{ inputs.binaryninja_version }}" ]]; then
           echo "binaryninja_version=${{ steps.get-latest-binaryninja-tag-info.outputs.latest_binaryninja_tag_name }}"
           echo "binaryninja_version=${{ steps.get-latest-binaryninja-tag-info.outputs.latest_binaryninja_tag_name }}" >> $GITHUB_OUTPUT
         else

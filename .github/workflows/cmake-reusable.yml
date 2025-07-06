@@ -162,11 +162,13 @@ jobs:
         # Attempt to get the tag name
         set +e
         TAG=$(git describe --exact-match --tags 2>/dev/null)
+        echo "TAG=$TAG"
         set -e
 
         # Check if a tag was found
         if [[ -n "$TAG" ]]; then
           echo "$TAG" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
+          echo "TEST TAG=$TAG"
         else
           # If no tag, get the current branch name
           BRANCH=$(git rev-parse --abbrev-ref HEAD)

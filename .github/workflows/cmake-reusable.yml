@@ -176,6 +176,13 @@ jobs:
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
 
+    - name: Patch api to allow building headlessly
+      if: inputs.patch_file
+      shell: bash
+      working-directory: ${{ github.workspace }}/third-party/binaryninja-api
+      run: |
+        git apply --verbose ${{ inputs.patch_file }}
+
     - name: Get Cache Key
       id: get-cache-key
       shell: bash
@@ -193,13 +200,6 @@ jobs:
         cache_key+="$protobuf_timestamp"
         echo "cache_key=$cache_key"
         echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
-
-    - name: Patch api to allow building headlessly
-      if: inputs.patch_file
-      shell: bash
-      working-directory: ${{ github.workspace }}/third-party/binaryninja-api
-      run: |
-        git apply --verbose ${{ inputs.patch_file }}
 
     - name: Enable Developer Command Prompt (Windows)
       if: inputs.os == 'windows-latest'

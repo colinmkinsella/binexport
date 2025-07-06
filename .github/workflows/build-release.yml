@@ -57,6 +57,7 @@ jobs:
           patch_file=$patch_4_1
         fi
 
+        echo "patch_file=$patch_file"
         echo "patch_file=$patch_file" >> $GITHUB_OUTPUT
 
   build-release:

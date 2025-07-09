@@ -9,6 +9,8 @@ on:
 jobs:
   get-dev-tag-list:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.get-dev-tags.outputs.matrix }}
     steps:
     - name: Get Dev Tags
       id: get-dev-tags
@@ -40,14 +42,15 @@ jobs:
 
               # adding the tag to the list if it is within 24 hours
               if [[ $date_timestamp -gt $twenty_four_hours_ago ]]; then
-                dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\""
+                dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\"}"
               fi
             fi
           fi
         done < <(echo $tags | jq -r '.[] | "\(.ref) \(.object.sha) \(.object.type)"')
 
-        dev_tags="[$dev_tags]"
-        echo $dev_tags
+        dev_tags="{\"include\": [$dev_tags]}"
+        echo "matrix=$dev_tags"
+        echo "matrix=$dev_tags" >> $GITHUB_OUTPUT
 
   #binaryninja-nightly-dev-release:
   #  uses: ./.github/workflows/build-release.yml

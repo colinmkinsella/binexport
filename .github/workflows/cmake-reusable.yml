@@ -166,13 +166,16 @@ jobs:
 
         # Check if a tag was found
         if [[ -n "$TAG" ]]; then
-          echo "$TAG" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
+          # replacing forward slashes with dashes
+          binaryninja_version="${TAG//\//-}"
         else
           # If no tag, get the current branch name
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          echo "$BRANCH" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
+          # replacing forward slashes with dashes
+          binaryninja_version="${BRANCH//\//-}"
         fi
 
+        echo "$binaryninja_version" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
 

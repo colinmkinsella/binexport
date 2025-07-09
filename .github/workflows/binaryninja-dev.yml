@@ -15,6 +15,12 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        dev_tags=""
+
+        # calculating twenty four hours ago
+        current_timestamp=$(date +"%s")
+        twenty_four_hours_ago=$((current_timestamp - 24 * 60 * 60))
+
         tags=$(gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -27,11 +33,21 @@ jobs:
                 -H "Accept: application/vnd.github+json" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
                 /repos/Vector35/binaryninja-api/git/commits/$tag_hash)
+
+              # determining if the tag was 24 hours ago
               tag_date=$(echo $tag_json | jq -r .committer.date)
-              echo "tag_name=$tag_name tag_date=$tag_date"
+              date_timestamp=$(date -d $tag_date +"%s")
+
+              # adding the tag to the list if it is within 24 hours
+              if [[ $date_timestamp -gt $twenty_four_hours_ago ]]; then
+                dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\""
+              fi
             fi
           fi
         done < <(echo $tags | jq -r '.[] | "\(.ref) \(.object.sha) \(.object.type)"')
+
+        dev_tags="[$dev_tags]"
+        echo $dev_tags
 
   #binaryninja-nightly-dev-release:
   #  uses: ./.github/workflows/build-release.yml

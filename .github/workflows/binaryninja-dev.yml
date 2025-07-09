@@ -42,11 +42,14 @@ jobs:
 
               # adding the tag to the list if it is within 24 hours
               if [[ $date_timestamp -gt $twenty_four_hours_ago ]]; then
-                dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\"}"
+                dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\"},"
               fi
             fi
           fi
         done < <(echo $tags | jq -r '.[] | "\(.ref) \(.object.sha) \(.object.type)"')
+
+        # removing last comma
+        dev_tags="${dev_tags%,}"
 
         dev_tags="{\"include\": [$dev_tags]}"
         echo "matrix=$dev_tags"

@@ -29,7 +29,7 @@ jobs:
             tag_name=$(echo $ref_name)
             echo "tag_name=$tag_name tag_date=$tag_date"
           fi
-        done < <(echo $tags | jq -r '.[].object | "\(.sha) \(.type) \(.ref)"')
+        done < <(echo $tags | jq -r '.[] | "\(.ref) \(.object.sha) \(.object.type)"')
 
   #binaryninja-nightly-dev-release:
   #  uses: ./.github/workflows/build-release.yml

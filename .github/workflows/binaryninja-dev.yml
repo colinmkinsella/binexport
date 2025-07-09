@@ -7,11 +7,13 @@ on:
     - cron: '0 0 * * *' # Daily
 
 jobs:
-  get-dev-releases-list:
+  get-dev-tag-list:
     runs-on: ubuntu-latest
     steps:
-    - name: Get Dev Releases
-      id: get-dev-releases
+    - name: Get Dev Tags
+      id: get-dev-tags
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         tags=$(gh api \
           -H "Accept: application/vnd.github+json" \

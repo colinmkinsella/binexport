@@ -19,10 +19,9 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           /repos/Vector35/binaryninja-api/git/refs/tags)
-        ref_tags_string="refs/tags"
         while read -r ref_name tag_hash tag_type; do
           if [[ "$tag_type" == "commit" ]]; then
-            tag_name=${$ref_name#$ref_tags_string}
+            tag_name="${$ref_name#refs/tags}"
             echo "$tag_name $tag_hash $tag_type"
             #tag_json=$(gh api \
             #  -H "Accept: application/vnd.github+json" \

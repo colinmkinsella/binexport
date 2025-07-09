@@ -22,13 +22,14 @@ jobs:
         ref_tags_string="refs/tags"
         while read -r ref_name tag_hash tag_type; do
           if [[ "$tag_type" == "commit" ]]; then
-            tag_json=$(gh api \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              /repos/Vector35/binaryninja-api/git/commits/$tag_hash)
-            tag_date=$(echo $tag_json | jq -r .committer.date)
-            tag_name=${$ref_name#$ref_tags_string}
-            echo "tag_name=$tag_name tag_date=$tag_date"
+            echo "$ref_name $tag_type $tag_type"
+            #tag_json=$(gh api \
+            #  -H "Accept: application/vnd.github+json" \
+            #  -H "X-GitHub-Api-Version: 2022-11-28" \
+            #  /repos/Vector35/binaryninja-api/git/commits/$tag_hash)
+            #tag_date=$(echo $tag_json | jq -r .committer.date)
+            #tag_name=${$ref_name#$ref_tags_string}
+            #echo "tag_name=$tag_name tag_date=$tag_date"
           fi
         done < <(echo $tags | jq -r '.[] | "\(.ref) \(.object.sha) \(.object.type)"')
 

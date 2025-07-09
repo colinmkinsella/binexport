@@ -131,6 +131,7 @@ jobs:
           # Attempt to get the tag name
           set +e
           TAG=$(git describe --exact-match --tags 2>/dev/null)
+          echo "TAG=$TAG"
           set -e
 
           # Check if a tag was found
@@ -155,29 +156,39 @@ jobs:
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
-        git fetch --tags
-        git checkout --force ${{ inputs.binaryninja_version }}
-        git submodule update --init --recursive
+        if [[ -n "${{ inputs.binaryninja_version }}" ]]; then
+          git fetch --tags
+          git checkout --force ${{ inputs.binaryninja_version }}
+          git submodule update --init --recursive
 
-        # Attempt to get the tag name
-        set +e
-        TAG=$(git describe --exact-match --tags 2>/dev/null)
-        set -e
+          # Attempt to get the tag name
+          set +e
+          TAG=$(git describe --exact-match --tags 2>/dev/null)
+          set -e
 
-        # Check if a tag was found
-        if [[ -n "$TAG" ]]; then
-          # replacing forward slashes with dashes
-          binaryninja_version="${TAG//\//-}"
-        else
-          # If no tag, get the current branch name
-          BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          # replacing forward slashes with dashes
-          binaryninja_version="${BRANCH//\//-}"
+          # Check if a tag was found
+          if [[ -n "$TAG" ]]; then
+            # replacing forward slashes with dashes
+            binaryninja_version="${TAG//\//-}"
+          else
+            # If no tag, get the current branch name
+            BRANCH=$(git rev-parse --abbrev-ref HEAD)
+            # replacing forward slashes with dashes
+            binaryninja_version="${BRANCH//\//-}"
+          fi
+
+          echo "$binaryninja_version" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
         fi
 
-        echo "$binaryninja_version" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
         cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
+
+    - name: Patch api to allow building headlessly
+      if: inputs.patch_file
+      shell: bash
+      working-directory: ${{ github.workspace }}/third-party/binaryninja-api
+      run: |
+        git apply --verbose ${{ inputs.patch_file }}
 
     - name: Get Cache Key
       id: get-cache-key
@@ -196,13 +207,6 @@ jobs:
         cache_key+="$protobuf_timestamp"
         echo "cache_key=$cache_key"
         echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
-
-    - name: Patch api to allow building headlessly
-      if: inputs.patch_file
-      shell: bash
-      working-directory: ${{ github.workspace }}/third-party/binaryninja-api
-      run: |
-        git apply --verbose ${{ inputs.patch_file }}
 
     - name: Enable Developer Command Prompt (Windows)
       if: inputs.os == 'windows-latest'

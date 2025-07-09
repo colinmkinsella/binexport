@@ -18,7 +18,6 @@ on:
 
 jobs:
   check-for-release:
-    if: inputs.binaryninja_version == ''
     runs-on: ubuntu-latest
     outputs:
       release_within_24_hours: ${{ steps.is-tag-within-24-hours.outputs.release_within_24_hours }}

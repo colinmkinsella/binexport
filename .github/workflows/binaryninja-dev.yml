@@ -21,7 +21,7 @@ jobs:
           /repos/Vector35/binaryninja-api/git/refs/tags)
         while read -r ref_name tag_hash tag_type; do
           if [[ "$tag_type" == "commit" ]]; then
-            tag_name="${$ref_name#refs/tags}"
+            tag_name="${ref_name#refs/tags}"
             echo "$tag_name $tag_hash $tag_type"
             #tag_json=$(gh api \
             #  -H "Accept: application/vnd.github+json" \

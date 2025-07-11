@@ -87,7 +87,7 @@ jobs:
       id: get-release-tag
       run: |
         # Checking if Release Tag is Empty, if it is empty then it is using Plugin Version
-        if [ -z ${{ inputs.release_tag }} ]; then
+        if [[ -z ${{ inputs.release_tag }} ]]; then
           echo "release_tag=v${{ needs.build-release.outputs.plugin_version }} " >> $GITHUB_OUTPUT
         else
           echo "release_tag=${{ inputs.release_tag }} " >> $GITHUB_OUTPUT
@@ -104,7 +104,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        if gh release view ${{ inputs.release_tag }}; then
+        if [[ gh release view ${{ inputs.release_tag }} ]]; then
           echo "release found"
           echo "release_exists=true" >> $GITHUB_OUTPUT
         else
@@ -117,14 +117,15 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        if [[ ${{ steps.check-if-release-exists.outputs.release_exists == 'true' }} ]]
-        echo ${{ steps.check-if-release-exists.outputs.release_exists }}
-        echo ${{ inputs.delete_existing_release == true }}
-        gh release delete ${{ inputs.release_tag }} --cleanup-tag --yes
-        echo "waiting for tag to be deleted"
-        while git fetch --tags --prune-tags; git tag -l | grep ${{ inputs.release_tag }}; do
-          sleep 5;
-        done
+        if [[ ${{ steps.check-if-release-exists.outputs.release_exists == 'true' }} ]]; then
+          echo ${{ steps.check-if-release-exists.outputs.release_exists }}
+          echo ${{ inputs.delete_existing_release == true }}
+          gh release delete ${{ inputs.release_tag }} --cleanup-tag --yes
+          echo "waiting for tag to be deleted"
+          while git fetch --tags --prune-tags; git tag -l | grep ${{ inputs.release_tag }}; do
+            sleep 5;
+          done
+        fi
 
     - name: Create Release From Tag
       if: ${{ (inputs.delete_existing_release == true) || (steps.check-if-release-exists.outputs.release_exists == 'false') }}
@@ -156,8 +157,31 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/${{ github.repository }}/actions/artifacts/$id/zip \
             > $name.zip
+
+          if [[ -n "${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_hash }}" ]]; then
+            unzip $name.zip
+            rm $name.zip
+            binaryninja_version="${{ needs.build-release.outputs.binaryninja_version }}"
+            binaryninja_newest_duplicate_tag_hash="${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_hash }}"
+            replace_zip_name="${name/$binaryninja_newest_duplicate_tag_hash/$binaryninja_version}"
+
+            # replacing all of the filenames from the newest duplicate to the actual tag name
+            for file in *; do
+              if [[ -f "$file" ]]; then
+                replace_filename="${file/$binaryninja_newest_duplicate_tag_hash/$binaryninja_version}"
+                mv $file $replace_filename
+              fi
+            done
+
+            # putting the files back in a zip
+            zip -r $replace_zip_name .
+          fi
+
           gh release upload ${{ steps.get-release-tag.outputs.release_tag }} \
             ${{ github.workspace }}/release/$name.zip#$name.zip \
             --repo ${{ github.repository }} \
             --clobber
+
+          # removing any artifacts that are left
+          rm -rf ./*
         done < <(echo $artifacts_json | jq -r '.artifacts[] | "\(.name) \(.id)"')

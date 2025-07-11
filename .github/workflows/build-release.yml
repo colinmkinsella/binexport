@@ -87,7 +87,7 @@ jobs:
       id: get-release-tag
       run: |
         # Checking if Release Tag is Empty, if it is empty then it is using Plugin Version
-        if [[ -z ${{ inputs.release_tag }} ]]; then
+        if [[ -z "${{ inputs.release_tag }}" ]]; then
           echo "release_tag=v${{ needs.build-release.outputs.plugin_version }} " >> $GITHUB_OUTPUT
         else
           echo "release_tag=${{ inputs.release_tag }} " >> $GITHUB_OUTPUT
@@ -104,7 +104,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        if [[ gh release view ${{ inputs.release_tag }} ]]; then
+        if [[ -n $(gh release view ${{ inputs.release_tag }}) ]]; then
           echo "release found"
           echo "release_exists=true" >> $GITHUB_OUTPUT
         else

@@ -76,7 +76,7 @@ on:
       binaryninja_version:
         description: "The Version of BinaryNinja that was determined from the tag or commit."
         value: ${{ jobs.build.outputs.binaryninja_version }}
-      binaryninja_newest_duplicate_tag_hash:
+      binaryninja_newest_duplicate_tag_name:
         description: "When the same commit is used for multiple tags this is the newest BinaryNinja version."
         value: ${{ jobs.build.outputs.binaryninja_version }}
       binexport_version:
@@ -92,7 +92,7 @@ jobs:
     runs-on: ${{ inputs.os }}
     outputs:
       binaryninja_version: ${{ steps.get-binaryninja-version.outputs.binaryninja_version }}
-      binaryninja_newest_duplicate_tag_hash: ${{ steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash }}
+      binaryninja_newest_duplicate_tag_name: ${{ steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name }}
       binexport_version: ${{ steps.get-binexport-version.outputs.binexport_version }}
       plugin_version: ${{ steps.get-plugin-version.outputs.plugin_version }}
 
@@ -172,32 +172,35 @@ jobs:
 
           # Check if a tag was found
           if [[ -n "$TAG" ]]; then
-            # replacing forward slashes with dashes
-            binaryninja_version="${TAG//\//-}"
-
+            binaryninja_version="$TAG"
             # if the tag changes, it is because there is the same hash for multiple tags
             # only the newest tag is returned from git describe
-            # this is saving as the original tag name so the plugin can find the correct build
+            # saving as the original tag name so the plugin can find the correct build
             if [[ "$binaryninja_version" != "${{ inputs.binaryninja_version }}" ]]; then
-              echo "binaryninja_newest_duplicate_tag_hash=$binaryninja_version"
-              echo "binaryninja_newest_duplicate_tag_hash=$binaryninja_version" >> $GITHUB_OUTPUT
+              binaryninja_newest_duplicate_tag_name="$binaryninja_version"
               binaryninja_version="${{ inputs.binaryninja_version }}"
+              echo "binaryninja_newest_duplicate_tag_name=$binaryninja_newest_duplicate_tag_name"
+              echo "binaryninja_newest_duplicate_tag_name=$binaryninja_newest_duplicate_tag_name" >> $GITHUB_OUTPUT
+              # replacing forward slashes with dashes
+              binaryninja_newest_duplicate_tag_name="${binaryninja_newest_duplicate_tag_name//\//-}"
             fi
           else
             # If no tag, get the current branch name
             BRANCH=$(git rev-parse --abbrev-ref HEAD)
-            # replacing forward slashes with dashes
-            binaryninja_version="${BRANCH//\//-}"
+            binaryninja_version="$BRANCH"
           fi
 
+          # replacing forward slashes with dashes
+          binaryninja_version="${binaryninja_version//\//-}"
           echo "$binaryninja_version" | tr -d '\n' > ../../VERSION_BINARYNINJA_LIB.txt
         fi
 
-        cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "BinaryNinja API Lib Version: "$1}'
-        cat ../../VERSION_BINARYNINJA_LIB.txt | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
+        # displaying as forward slashes to better represent the version, but need dashes in the filename
+        cat ../../VERSION_BINARYNINJA_LIB.txt | sed 's/\//-/g' | awk '{print "BinaryNinja API Lib Version: "$1}'
+        cat ../../VERSION_BINARYNINJA_LIB.txt | sed 's/\//-/g' | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
 
     - name: Patch api to allow building headlessly
-      if: inputs.patch_file && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: inputs.patch_file && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       shell: bash
       working-directory: ${{ github.workspace }}/third-party/binaryninja-api
       run: |
@@ -205,7 +208,7 @@ jobs:
 
     - name: Get Cache Key
       id: get-cache-key
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       shell: bash
       working-directory: ${{ github.workspace }}
       env:
@@ -223,15 +226,15 @@ jobs:
         echo "cache_key=$cache_key" >> $GITHUB_OUTPUT
 
     - name: Enable Developer Command Prompt (Windows)
-      if: inputs.os == 'windows-latest' && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: inputs.os == 'windows-latest' && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       uses: ilammy/msvc-dev-cmd@v1.13.0
 
     - name: Enable mold linker (Linux)
-      if: inputs.os == 'ubuntu-latest' && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: inputs.os == 'ubuntu-latest' && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       uses: rui314/setup-mold@v1
 
     - name: Setup CMake and Ninja
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       uses: lukka/get-cmake@v4.0.2
       with:
         cmakeVersion: 4.0.2
@@ -239,7 +242,7 @@ jobs:
 
     - name: Cache Restore CMake Build
       id: cache-restore-build
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       uses: actions/cache/restore@v4
       with:
         path: build
@@ -247,20 +250,20 @@ jobs:
 
     - name: Configure CMake
       id: configure-cmake
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       shell: bash
       run: |
         cmake -S "${{ github.workspace }}" -G Ninja -B build \
           "-DCMAKE_BUILD_TYPE=${{ inputs.build_type }}"
 
     - name: Build
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }}
 
     - name: Cache Save CMake Build
       id: cache-save-build
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       uses: actions/cache/save@v4
       with:
         path: build
@@ -268,7 +271,7 @@ jobs:
 
     - name: Get Artifact Name
       id: get-artifact-name
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       shell: bash
       run: |
         artifact_name="${{ inputs.base_artifact_filename }}"
@@ -281,7 +284,7 @@ jobs:
 
     - name: Upload Build Artifacts
       id: upload-build-artifacts
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_hash == ''
+      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.get-artifact-name.outputs.artifact_name }}

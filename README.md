@@ -50,12 +50,18 @@ There are just a few dependencies to satisfy:
 
 ### Manually Update the Version Numbers
 
-The GitHub workflow will autogenerate the version number based on the
-CMakeLists.txt in the main Google BinExport (Library) project and the
-BinaryNinja API (Library) that are both submodules. Locally this is saved as
-`VERSION_BINEXPORT_LIB.txt` and `VERSION_BINARYNINJA_LIB`. This process is not
-automated locally, so if you desire the version to be updated you will have to
-manually update it.
+The GitHub workflow will autogenerate the version number based on
+version number in CMakeLists.txt, commit dates, and tags in the main Google
+BinExport (Library) project and BinaryNinja API (Library) submodules. Locally
+this is saved as `VERSION_BINEXPORT_LIB.txt` and `VERSION_BINARYNINJA_LIB`.
+This process is not automated locally, so if you desire the version to be
+updated you will have to manually update it. The version in this aspect is just
+for file naming. Utilize git submodule to change the respective binaryninja-api
+and binexport builds. Abseil and protobuf are configured to pull the latest
+release. The dev tags for the development release of BinaryNinja utilizes a
+naming convention of `dev/5.1.7879` as an example. Since the forward slash
+in a filename doesn't play nice with filesystems, it is converted to a dash.
+The tag has a forward slash, and the filename has a dash.
 
 ### Building
 

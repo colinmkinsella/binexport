@@ -158,17 +158,17 @@ jobs:
             /repos/${{ github.repository }}/actions/artifacts/$id/zip \
             > $name.zip
 
-          if [[ -n "${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_hash }}" ]]; then
+          if [[ -n "${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_name }}" ]]; then
             unzip $name.zip
             rm $name.zip
             binaryninja_version="${{ needs.build-release.outputs.binaryninja_version }}"
-            binaryninja_newest_duplicate_tag_hash="${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_hash }}"
-            replace_zip_name="${name/$binaryninja_newest_duplicate_tag_hash/$binaryninja_version}"
+            binaryninja_newest_duplicate_tag_name="${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_name }}"
+            replace_zip_name="${name/$binaryninja_newest_duplicate_tag_name/$binaryninja_version}"
 
             # replacing all of the filenames from the newest duplicate to the actual tag name
             for file in *; do
               if [[ -f "$file" ]]; then
-                replace_filename="${file/$binaryninja_newest_duplicate_tag_hash/$binaryninja_version}"
+                replace_filename="${file/$binaryninja_newest_duplicate_tag_name/$binaryninja_version}"
                 mv $file $replace_filename
               fi
             done

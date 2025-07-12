@@ -196,8 +196,8 @@ jobs:
         fi
 
         # displaying as forward slashes to better represent the version, but need dashes in the filename
-        cat ../../VERSION_BINARYNINJA_LIB.txt | sed 's/-//\/g' | awk '{print "BinaryNinja API Lib Version: "$1}'
-        cat ../../VERSION_BINARYNINJA_LIB.txt | sed 's/-//\/g' | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
+        cat ../../VERSION_BINARYNINJA_LIB.txt | sed 's/-/\//g' | awk '{print "BinaryNinja API Lib Version: "$1}'
+        cat ../../VERSION_BINARYNINJA_LIB.txt | sed 's/-/\//g' | awk '{print "binaryninja_version="$1}' >> $GITHUB_OUTPUT
 
     - name: Patch api to allow building headlessly
       if: inputs.patch_file && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''

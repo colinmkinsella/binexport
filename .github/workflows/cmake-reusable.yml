@@ -78,7 +78,7 @@ on:
         value: ${{ jobs.build.outputs.binaryninja_version }}
       binaryninja_newest_duplicate_tag_name:
         description: "When the same commit is used for multiple tags this is the newest BinaryNinja version."
-        value: ${{ jobs.build.outputs.binaryninja_version }}
+        value: ${{ jobs.build.outputs.binaryninja_newest_duplicate_tag_name }}
       binexport_version:
         description: "The Version of BinExport that was determined from the tag or commit."
         value: ${{ jobs.build.outputs.binexport_version }}

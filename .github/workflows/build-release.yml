@@ -168,8 +168,10 @@ jobs:
             # replacing all of the filenames from the newest duplicate to the actual tag name
             for file in *; do
               if [[ -f "$file" ]]; then
-                replace_filename="${file/$binaryninja_newest_duplicate_tag_name/$binaryninja_version}"
-                mv $file $replace_filename
+                if [[ "$binaryninja_newest_duplicate_tag_name" != "$binaryninja_version" ]]; then
+                  replace_filename="${file/$binaryninja_newest_duplicate_tag_name/$binaryninja_version}"
+                  mv $file $replace_filename
+                fi
               fi
             done
 

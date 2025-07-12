@@ -1,7 +1,7 @@
 [submodule "third-party/binaryninja-api"]
 	path = third-party/binaryninja-api
 	url = https://github.com/Vector35/binaryninja-api
-	branch = v5.0.7486-stable
+	branch = dev
 [submodule "third-party/binexport/src"]
 	path = third-party/binexport/src
 	url = https://github.com/google/binexport.git

@@ -79,11 +79,11 @@ jobs:
         echo "matrix=$dev_tags"
         echo "matrix=$dev_tags" >> $GITHUB_OUTPUT
 
-  #binaryninja-nightly-dev-release:
-  #  needs: get-dev-tag-list
-  #  strategy:
-  #    fail-fast: false
-  #    matrix: ${{ fromJSON(needs.get-dev-tag-list.outputs.matrix) }}
-  #  uses: ./.github/workflows/build-release.yml
-  #  with:
-  #    binaryninja_version: ${{ matrix.tag_name }}
+  binaryninja-nightly-dev-release:
+    needs: get-dev-tag-list
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.get-dev-tag-list.outputs.matrix) }}
+    uses: ./.github/workflows/build-release.yml
+    with:
+      binaryninja_version: ${{ matrix.tag_name }}

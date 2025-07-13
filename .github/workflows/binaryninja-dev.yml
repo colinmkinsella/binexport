@@ -3,6 +3,14 @@ run-name: binaryninja-dev
 
 on:
   workflow_dispatch:
+    inputs:
+      build:
+        type: choice
+        description: Build All or Last 24 Hours
+        options:
+        - All
+        - Last 24 hours
+        default: 'All'
   schedule:
     - cron: '0 0 * * *' # Daily
 
@@ -22,6 +30,14 @@ jobs:
         # calculating twenty four hours ago
         current_timestamp=$(date +"%s")
         twenty_four_hours_ago=$((current_timestamp - 24 * 60 * 60))
+
+        # getting the latest plugin release with a list of assets
+        if [[ "${{ inputs.build }}" == "All"]]; then
+          latest_plugin_release=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/releases/latest)
+        fi
 
         tags=$(gh api \
           -H "Accept: application/vnd.github+json" \
@@ -43,6 +59,15 @@ jobs:
               # adding the tag to the list if it is within 24 hours
               if [[ $date_timestamp -gt $twenty_four_hours_ago ]]; then
                 dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\"},"
+              # if building all the tags
+              elif [[ "${{ inputs.build }}" == "All"]]; then
+                number_of_assets_found=$(echo $latest_plugin_release | jq '[.assets.[] | \
+                  select(.name | contains("$tag_name"))] | length')
+
+                # only build tags that don't exist
+                if [[ $number_of_assets_found == 0 ]]; then
+                  dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\"},"
+                fi
               fi
             fi
           fi
@@ -55,11 +80,11 @@ jobs:
         echo "matrix=$dev_tags"
         echo "matrix=$dev_tags" >> $GITHUB_OUTPUT
 
-  binaryninja-nightly-dev-release:
-    needs: get-dev-tag-list
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.get-dev-tag-list.outputs.matrix) }}
-    uses: ./.github/workflows/build-release.yml
-    with:
-      binaryninja_version: ${{ matrix.tag_name }}
+  #binaryninja-nightly-dev-release:
+  #  needs: get-dev-tag-list
+  #  strategy:
+  #    fail-fast: false
+  #    matrix: ${{ fromJSON(needs.get-dev-tag-list.outputs.matrix) }}
+  #  uses: ./.github/workflows/build-release.yml
+  #  with:
+  #    binaryninja_version: ${{ matrix.tag_name }}

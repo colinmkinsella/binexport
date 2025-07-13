@@ -10,7 +10,7 @@ on:
         options:
         - All
         - Last 24 hours
-        default: 'All'
+        default: 'Last 24 hours'
   schedule:
     - cron: '0 0 * * *' # Daily
 

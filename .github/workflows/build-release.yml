@@ -158,15 +158,15 @@ jobs:
             /repos/${{ github.repository }}/actions/artifacts/$id/zip \
             > $name.zip
 
-          binaryninja_newest_duplicate_tag_name="${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_name }}"
-          binaryninja_version="${{ needs.build-release.outputs.binaryninja_version }}"
-          echo "binaryninja_newest_duplicate_tag_name=$binaryninja_newest_duplicate_tag_name"
-          echo "binaryninja_version=$binaryninja_version"
-          if [[ "$binaryninja_newest_duplicate_tag_name" != "$binaryninja_version" ]]; then
+          if [[ -n "${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_name }}" ]]; then
             echo "Rename File to Original Tag Name"
             echo "$name.zip"
             unzip $name.zip
             rm $name.zip
+            binaryninja_newest_duplicate_tag_name="${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_name }}"
+            binaryninja_version="${{ needs.build-release.outputs.binaryninja_version }}"
+            echo "binaryninja_newest_duplicate_tag_name=$binaryninja_newest_duplicate_tag_name"
+            echo "binaryninja_version=$binaryninja_version"
             replace_zip_name="${name/$binaryninja_newest_duplicate_tag_name/$binaryninja_version}"
             echo "replace_zip_name=$replace_zip_name"
 

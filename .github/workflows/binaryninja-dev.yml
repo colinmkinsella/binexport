@@ -32,7 +32,7 @@ jobs:
         twenty_four_hours_ago=$((current_timestamp - 24 * 60 * 60))
 
         # getting the latest plugin release with a list of assets
-        if [[ "${{ inputs.build }}" == "All"]]; then
+        if [[ "${{ inputs.build }}" == "All" ]]; then
           latest_plugin_release=$(gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -60,7 +60,7 @@ jobs:
               if [[ $date_timestamp -gt $twenty_four_hours_ago ]]; then
                 dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\"},"
               # if building all the tags
-              elif [[ "${{ inputs.build }}" == "All"]]; then
+              elif [[ "${{ inputs.build }}" == "All" ]]; then
                 number_of_assets_found=$(echo $latest_plugin_release | jq '[.assets.[] | \
                   select(.name | contains("$tag_name"))] | length')
 

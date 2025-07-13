@@ -264,7 +264,7 @@ jobs:
 
     - name: Cache Save CMake Build
       id: cache-save-build
-      if: steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
+      if: steps.cache-restore-build.outputs.cache-hit != 'true' && steps.get-binaryninja-version.outputs.binaryninja_newest_duplicate_tag_name == ''
       uses: actions/cache/save@v4
       with:
         path: build

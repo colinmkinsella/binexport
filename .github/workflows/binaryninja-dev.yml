@@ -61,8 +61,7 @@ jobs:
                 dev_tags+="{\"tag_name\": \"$tag_name\", \"tag_date\": \"$tag_date\"},"
               # if building all the tags
               elif [[ "${{ inputs.build }}" == "All" ]]; then
-                number_of_assets_found=$(echo $latest_plugin_release | jq '[.assets.[] | \
-                  select(.name | contains("$tag_name"))] | length')
+                number_of_assets_found=$(echo $latest_plugin_release | jq '[.assets.[] | select(.name | contains("$tag_name"))] | length')
 
                 # only build tags that don't exist
                 if [[ $number_of_assets_found == 0 ]]; then

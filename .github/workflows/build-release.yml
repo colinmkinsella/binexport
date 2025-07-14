@@ -158,36 +158,6 @@ jobs:
             /repos/${{ github.repository }}/actions/artifacts/$id/zip \
             > $name.zip
 
-          if [[ -n "${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_name }}" ]]; then
-            echo "Rename File to Original Tag Name"
-            echo "$name.zip"
-            unzip $name.zip
-            rm $name.zip
-            binaryninja_newest_duplicate_tag_name="${{ needs.build-release.outputs.binaryninja_newest_duplicate_tag_name }}"
-            binaryninja_version="${{ needs.build-release.outputs.binaryninja_version }}"
-            echo "binaryninja_newest_duplicate_tag_name=$binaryninja_newest_duplicate_tag_name"
-            echo "binaryninja_version=$binaryninja_version"
-            replace_zip_name="${name/$binaryninja_newest_duplicate_tag_name/$binaryninja_version}"
-            echo "replace_zip_name=$replace_zip_name"
-
-            # replacing all of the filenames from the newest duplicate to the actual tag name
-            for file in *; do
-              if [[ -f "$file" ]]; then
-                if [[ "$binaryninja_newest_duplicate_tag_name" != "$binaryninja_version" ]]; then
-                  replace_filename="${file/$binaryninja_newest_duplicate_tag_name/$binaryninja_version}"
-                  echo "file=$file"
-                  echo "replace_filename=$replace_filename"
-                  mv $file $replace_filename
-                fi
-              fi
-            done
-
-            # putting the files back in a zip
-            name="$replace_zip_name"
-            echo "name=$name"
-            zip -r $name.zip .
-          fi
-
           gh release upload ${{ steps.get-release-tag.outputs.release_tag }} \
             ${{ github.workspace }}/release/$name.zip#$name.zip \
             --repo ${{ github.repository }} \

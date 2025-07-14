@@ -169,7 +169,7 @@ jobs:
           # Check if a tag was found
           if [[ -n "$TAG" ]]; then
             if [[ "$TAG" != "${{ inputs.binaryninja_version }}" ]]; then
-              binaryninja_version = "${{ inputs.binaryninja_version }}"
+              binaryninja_version="${{ inputs.binaryninja_version }}"
             fi
           else
             # If no tag, get the current branch name

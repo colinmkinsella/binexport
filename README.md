@@ -67,8 +67,8 @@ The tag has a forward slash, and the filename has a dash.
 
 ```Bash
 # Get the source
-git clone  https://github.com/colinmkinsella/binexport-binaryninja
-cd binexport-binaryninja
+git clone  https://github.com/colinmkinsella/binexport
+cd binexport
 git submodule update --init --recursive
 
 # Configure an out-of-source build setup

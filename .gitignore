@@ -3,6 +3,9 @@
 .*.swp
 .*.swo
 
+# MacOS
+.DS_Store
+
 # IDEs
 .cache/
 .clangd/

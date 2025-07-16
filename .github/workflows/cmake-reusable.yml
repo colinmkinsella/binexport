@@ -204,7 +204,8 @@ jobs:
       run: |
         absl_timestamp=$(gh api repos/abseil/abseil-cpp/commits/master --jq .commit.author.date)
         protobuf_timestamp=$(gh api repos/protocolbuffers/protobuf/commits/main --jq .commit.author.date)
-        cache_key="${{ runner.os }}-${{ runner.arch }}_"
+        cache_key="${{ github.repository }}_"
+        cache_key+="${{ runner.os }}-${{ runner.arch }}_"
         cache_key+="${{ steps.get-binaryninja-version.outputs.binaryninja_version }}_"
         cache_key+="${{ steps.get-binexport-version.outputs.binexport_version }}_"
         cache_key+="$absl_timestamp"

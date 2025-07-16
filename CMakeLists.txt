@@ -25,14 +25,6 @@ find_path(
 )
 add_subdirectory(${BINEXPORT_PATH} binexport)
 
-message(STATUS ${BINARYEXPORT_VERSION_COMMIT_DATE})
-
-file(GLOB SOURCES
-  src/*.cpp
-  src/*.cc
-  src/*.c
-  src/*.h)
-
 set(HEADLESS TRUE)
 find_path(
     BN_API_PATH
@@ -45,6 +37,20 @@ add_subdirectory(${BN_API_PATH} binaryninja-api)
 message(STATUS "BinExport Plugin Version: ${BINEXPORT_PLUGIN_VERSION_NUMBER}")
 message(STATUS "BinExport Lib Version: ${BINEXPORT_VERSION_COMMIT_DATE}")
 message(STATUS "BinaryNinja Lib Version: ${BINARYNINJA_API_VERSION}")
+
+configure_file(
+  "${PROJECT_SOURCE_DIR}/src/version.cc.in"
+  "${PROJECT_BINARY_DIR}/src/version.cc"
+  ESCAPE_QUOTES @ONLY
+)
+
+file(GLOB SOURCES
+  src/*.cpp
+  src/*.cc
+  src/*.c
+  src/*.h
+  ${PROJECT_BINARY_DIR}/src/*.cc)
+message(STATUS ${SOURCES})
 
 set(bn_plugin_name BinExport${BINEXPORT_VERSION_COMMIT_DATE}_BinaryNinja-${BINARYNINJA_API_VERSION}_Plugin-${BINEXPORT_PLUGIN_VERSION_NUMBER})
 add_library(${bn_plugin_name} SHARED ${SOURCES})

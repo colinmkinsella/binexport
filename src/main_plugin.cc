@@ -14,6 +14,7 @@
 
 #include "main_plugin.h"
 #include "log_sink.h"
+#include "version.h"
 
 #include <cstdint>
 #include <string>
@@ -555,11 +556,13 @@ bool Plugin::Init() {
     return false;
   }
 
-  LOG(INFO) << kBinExportName << " " << kBinExportDetailedVersion << ", "
+  LOG(INFO) << kBinExportPluginName << " " << kBinExportPluginVersion << ", "
+            << kBinExportName << " Library " << kBinExportLibVersion << ", "
+            << "BinaryNinja API " << kBinaryNinjaVersion << ", "
             << kBinExportCopyright;
 
   BinaryNinja::PluginCommand::Register(
-      kBinExportName, kDescription,
+      kBinExportPluginName, kDescription,
       [](BinaryNinja::BinaryView* view) { Plugin::instance()->Run(view); });
 
   return true;

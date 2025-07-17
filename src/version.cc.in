@@ -26,7 +26,4 @@ ABSL_CONST_INIT const char* kBinExportLibVersion = "@BINEXPORT_VERSION_COMMIT_DA
 
 ABSL_CONST_INIT const char* kBinaryNinjaVersion = "@BINARYNINJA_API_VERSION@";
 
-ABSL_CONST_INIT const char* kBinExportCopyright =
-    "(c)2004-2011 zynamics GmbH, (c)2011-2025 Google LLC.";
-
 }  // namespace security::binexport
